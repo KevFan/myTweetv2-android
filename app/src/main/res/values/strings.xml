@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">MyTweet</string>
+    <string name="login">Login</string>
+    <string name="signup">Signup</string>
+    <string name="signupMessage">sign up to mytweet</string>
+    <string name="firstName">First Name</string>
+    <string name="lastName">Last Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="loginMessage">Enter your name and password \nYou must be registered.</string>
+    <string name="tweetHint">What\'s in your mind?</string>
+    <string name="tweet">Tweet</string>
+    <string name="selectContact">Select Contact</string>
+    <string name="emailTweet">Email Tweet via</string>
+    <string name="menuSettings">Settings</string>
+    <string name="menuTimeLine">Timeline</string>
+    <string name="menuLogout">Logout</string>
+    <string name="tweet_report_title">My Latest Tweet</string>
+    <string name="newTweet">New Tweet</string>
+    <string name="deleteTweet">Delete Tweet</string>
+    <string name="clearTimeLine">Clear</string>
+    <string name="noTweetsMessage">No tweets to show. Start tweeting to get started !</string>
+    <string name="password_summary">You may set your password here</string>
+    <string name="firstNameSummary">You may set your first name here</string>
+    <string name="lastNameSummary">You may set your last name here</string>
+    <string name="emailSummary">You may set your email here</string>
+    <string name="welcome">Welcome to MyTweet. The microblog to use</string>
+    <string name="defaultCount">140</string>
+    <string name="defaultDate">A Date</string>
+</resources>
