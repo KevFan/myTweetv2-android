@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.activities.HomeActivity;
-import kevin.mytweet.activities.TimeLineActivity;
 import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;

@@ -40,19 +40,13 @@
                 android:value=".activities.Welcome"/>
         </activity>
         <activity
-            android:name=".activities.TimeLineActivity"
-            android:configChanges="orientation"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
             android:name=".activities.DetailTweetPagerActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.TimeLineActivity"/>
+                android:value=".activities.HomeActivity"/>
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
@@ -61,7 +55,7 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.TimeLineActivity"/>
+                android:value=".activities.HomeActivity"/>
         </activity>
         <activity
             android:name=".activities.AddTweetActivity"
@@ -70,7 +64,7 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.TimeLineActivity"/>
+                android:value=".activities.HomeActivity"/>
         </activity>
         <activity
             android:name=".activities.HomeActivity"
