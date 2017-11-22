@@ -9,4 +9,9 @@
     tools:context="kevin.mytweet.activities.HomeActivity"
     tools:showIn="@layout/app_bar_home">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/homeFrame"/>
+
 </android.support.constraint.ConstraintLayout>

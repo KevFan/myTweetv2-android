@@ -3,6 +3,8 @@ package kevin.mytweet.fragments;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
+import kevin.mytweet.activities.AddTweetActivity;
 import kevin.mytweet.activities.DetailTweetPagerActivity;
 import kevin.mytweet.activities.SettingsActivity;
 import kevin.mytweet.activities.Welcome;
@@ -40,7 +43,7 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  * Created by kevin on 20/10/2017.
  */
 
-public class TimeLineFragment extends ListFragment implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
+public class TimeLineFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
   private TimeLine timeLine;
   private TimeLineAdapter adapter;
   MyTweetApp app;
@@ -63,7 +66,6 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
     timeLine = app.currentUser.timeLine;
 
     adapter = new TimeLineAdapter(getActivity(), timeLine.tweets);
-    setListAdapter(adapter);
   }
 
   /**
@@ -76,34 +78,28 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
    */
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-    View view = super.onCreateView(inflater, parent, savedInstanceState);
-    listView = (ListView) view.findViewById(android.R.id.list);
+    View view = inflater.inflate(R.layout.fragment_home, parent, false);
+    listView = (ListView) view.findViewById(R.id.tweetList);
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
     listView.setMultiChoiceModeListener(this);
+    listView.setAdapter(adapter);
+    listView.setOnItemClickListener(this);
 
     // If there are tweets, set the no tweets message to invisible
-    noTweetMessage = (TextView) getActivity().findViewById(R.id.noTweetsMessage);
+    noTweetMessage = (TextView) view.findViewById(R.id.noTweetsMessage);
     if (!timeLine.tweets.isEmpty()) {
       noTweetMessage.setVisibility(View.INVISIBLE);
     }
 
-    return view;
-  }
+    FloatingActionButton newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
+    newTweet.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        startActivity(new Intent(view.getContext(), AddTweetActivity.class));
+      }
+    });
 
-  /**
-   * Called when an item in the list fragment is clicked
-   *
-   * @param l        list view
-   * @param view     view
-   * @param position position of the item
-   * @param id       id
-   */
-  @Override
-  public void onListItemClick(ListView l, View view, int position, long id) {
-    Tweet tweet = ((TimeLineAdapter) getListAdapter()).getItem(position);
-    Intent intent = new Intent(getActivity(), DetailTweetPagerActivity.class);
-    intent.putExtra(DetailTweetFragment.EXTRA_TWEET_ID, tweet.id);
-    startActivityForResult(intent, 0);
+    return view;
   }
 
   /**

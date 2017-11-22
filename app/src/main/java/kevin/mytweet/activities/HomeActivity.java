@@ -1,10 +1,9 @@
 package kevin.mytweet.activities;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import kevin.mytweet.R;
+import kevin.mytweet.fragments.TimeLineFragment;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -37,6 +37,11 @@ public class HomeActivity extends AppCompatActivity
 
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
+
+    // Set home view to timeline fragment
+    FragmentManager manager = getSupportFragmentManager();
+    Fragment fragment = new TimeLineFragment();
+    manager.beginTransaction().add(R.id.homeFrame, fragment).commit();
   }
 
   @Override
