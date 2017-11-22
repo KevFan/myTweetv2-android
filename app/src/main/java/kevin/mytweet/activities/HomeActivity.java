@@ -1,5 +1,6 @@
 package kevin.mytweet.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -91,6 +92,7 @@ public class HomeActivity extends AppCompatActivity
       toastMessage(this, "Nav TimeLine Selected");
     } else if (id == R.id.nav_setting) {
       toastMessage(this, "Nav Settings Selected");
+      startActivity(new Intent(this, SettingsActivity.class));
     }
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

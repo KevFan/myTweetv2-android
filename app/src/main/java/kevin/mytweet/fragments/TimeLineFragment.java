@@ -130,10 +130,6 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
               });
         }
         break;
-      // Starts the settings activity
-      case R.id.menuSettings:
-        startActivity(new Intent(getActivity(), SettingsActivity.class));
-        break;
       // Clear entire activity history when logging out so that user can use back button to return
       // to old activities if a different user sign's in
       // https://stackoverflow.com/questions/3473168/clear-the-entire-history-stack-and-start-a-new-activity-on-android
@@ -300,10 +296,11 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   }
 
   /**
-   * Method stub to implement MultiChoiceModeListener interface - unused
+   * Called on preparation of the action mode, sets the title
    */
   @Override
   public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+    actionMode.setTitle("Delete Tweets");
     return false;
   }
 
