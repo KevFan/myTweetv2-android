@@ -48,16 +48,16 @@ public class MyTweetApp extends Application {
   public void onCreate() {
     super.onCreate();
     info("MyTweet App Started");
-    users = load();
+//    users = load();
     app = this;
     // If current user is still logged in, log them in instead of starting welcome activity
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    if (successLogin(prefs.getString("email", null), prefs.getString("password", null))) {
-      info("Logging in previous user: " + prefs.getString("email", null));
-      startActivity(new Intent(this, HomeActivity.class));
-    } else {
-      info("No logged in user detected - starting welcome activity");
-    }
+//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//    if (successLogin(prefs.getString("email", null), prefs.getString("password", null))) {
+//      info("Logging in previous user: " + prefs.getString("email", null));
+//      startActivity(new Intent(this, HomeActivity.class));
+//    } else {
+//      info("No logged in user detected - starting welcome activity");
+//    }
   }
 
   /**
@@ -77,7 +77,7 @@ public class MyTweetApp extends Application {
    */
   public void newUser(User user) {
     users.add(user);
-    save();
+//    save();
     currentUser = user;
     setPreferenceSettings();
   }
@@ -102,53 +102,53 @@ public class MyTweetApp extends Application {
     return false;
   }
 
-  /**
-   * Uses GSon and output stream to write the current list of users to a json file
-   */
-  public void save() {
-    Gson gson = new GsonBuilder().create();
-    Writer writer;
-    try {
-      OutputStream out = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-      writer = new OutputStreamWriter(out);
-      writer.write(gson.toJson(users));
-      writer.close();
-      info("Saved by gson!!");
-    } catch (Exception e) {
-      info(e.toString());
-    }
-  }
-
-  /**
-   * Using GSon and input stream, load a list of users from a json file
-   *
-   * @return List of users
-   */
-  public List<User> load() {
-    List<User> users = new ArrayList<User>();
-    Gson gson = new Gson();
-    Type modelType = new TypeToken<List<User>>() {
-    }.getType();
-    BufferedReader reader;
-    try {
-      // open and read the file into a StringBuilder
-      InputStream in = this.openFileInput(FILENAME);
-      reader = new BufferedReader(new InputStreamReader(in));
-      StringBuilder jsonString = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        // line breaks are omitted and irrelevant
-        jsonString.append(line);
-      }
-      reader.close();
-      users = gson.fromJson(jsonString.toString(), modelType);
-      info("Loaded by GSon!!");
-    } catch (Exception e) {
-      info(e.toString());
-    }
-
-    return users;
-  }
+//  /**
+//   * Uses GSon and output stream to write the current list of users to a json file
+//   */
+//  public void save() {
+//    Gson gson = new GsonBuilder().create();
+//    Writer writer;
+//    try {
+//      OutputStream out = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+//      writer = new OutputStreamWriter(out);
+//      writer.write(gson.toJson(users));
+//      writer.close();
+//      info("Saved by gson!!");
+//    } catch (Exception e) {
+//      info(e.toString());
+//    }
+//  }
+//
+//  /**
+//   * Using GSon and input stream, load a list of users from a json file
+//   *
+//   * @return List of users
+//   */
+//  public List<User> load() {
+//    List<User> users = new ArrayList<User>();
+//    Gson gson = new Gson();
+//    Type modelType = new TypeToken<List<User>>() {
+//    }.getType();
+//    BufferedReader reader;
+//    try {
+//      // open and read the file into a StringBuilder
+//      InputStream in = this.openFileInput(FILENAME);
+//      reader = new BufferedReader(new InputStreamReader(in));
+//      StringBuilder jsonString = new StringBuilder();
+//      String line;
+//      while ((line = reader.readLine()) != null) {
+//        // line breaks are omitted and irrelevant
+//        jsonString.append(line);
+//      }
+//      reader.close();
+//      users = gson.fromJson(jsonString.toString(), modelType);
+//      info("Loaded by GSon!!");
+//    } catch (Exception e) {
+//      info(e.toString());
+//    }
+//
+//    return users;
+//  }
 
   /**
    * Sets shared preference values to current user

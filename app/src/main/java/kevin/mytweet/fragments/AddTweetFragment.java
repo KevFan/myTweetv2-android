@@ -106,7 +106,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
           toastMessage(getActivity(), "Write your message to send tweet");
         } else {
           app.addTweet(tweet);
-          app.save();
+//          app.save();
           toastMessage(getActivity(), "Message Sent !! ");
           // Finish the activity to reload timeline activity and prevents adding the add tweet
           // to the back stack

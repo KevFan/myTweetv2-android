@@ -118,7 +118,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
                   timeLine.clear();
-                  app.save();
+//                  app.save();
                   adapter.notifyDataSetChanged();
                   noTweetMessage.setVisibility(View.VISIBLE);
                   toastMessage(getActivity(), "All tweets cleared and deleted");
@@ -284,7 +284,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     for (int i = adapter.getCount() - 1; i >= 0; i--) {
       if (listView.isItemChecked(i)) {
         app.deleteTweet(adapter.getItem(i));
-        app.save();
+//        app.save();
       }
     }
     actionMode.finish();

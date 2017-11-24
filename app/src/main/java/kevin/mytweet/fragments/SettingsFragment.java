@@ -108,6 +108,6 @@ public class SettingsFragment extends PreferenceFragment
     }
     // Ensures the current shared preference values are specific to user
     MyTweetApp.getApp().setPreferenceSettings();
-    MyTweetApp.getApp().save();
+//    MyTweetApp.getApp().save();
   }
 }
