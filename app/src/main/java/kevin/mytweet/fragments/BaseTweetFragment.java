@@ -10,8 +10,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.Button;
 
+import java.util.List;
+
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.models.TimeLine;
 import kevin.mytweet.models.Tweet;
 
 import static kevin.mytweet.helpers.ContactHelper.getContact;
@@ -27,7 +28,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 public class BaseTweetFragment extends Fragment {
   protected static final int REQUEST_CONTACT = 1;
 
-  protected TimeLine timeLine;
+  protected List<Tweet> timeLine;
   protected MyTweetApp app;
   protected Tweet tweet;
   protected Intent data;
@@ -44,7 +45,7 @@ public class BaseTweetFragment extends Fragment {
     info("Base Tweet Fragment created");
     super.onCreate(savedInstanceState);
     app = MyTweetApp.getApp();
-    timeLine = app.currentUser.timeLine;
+    timeLine = app.timeLine;
   }
 
   /**

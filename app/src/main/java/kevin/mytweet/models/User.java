@@ -6,11 +6,11 @@ package kevin.mytweet.models;
  */
 
 public class User {
+  public String _id;
   public String firstName;
   public String lastName;
   public String email;
   public String password;
-  public TimeLine timeLine;
 
   /**
    * User constructor
@@ -19,13 +19,11 @@ public class User {
    * @param lastName  Last name of user
    * @param email     Email of user
    * @param password  Password of user
-   * @param timeLine  TimeLine of user
    */
-  public User(String firstName, String lastName, String email, String password, TimeLine timeLine) {
+  public User(String firstName, String lastName, String email, String password) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
-    this.timeLine = timeLine;
   }
 }

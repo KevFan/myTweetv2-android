@@ -38,8 +38,8 @@ public class DetailTweetFragment extends BaseTweetFragment implements View.OnCli
     info("Detail Tweet Fragment created");
     super.onCreate(savedInstanceState);
 
-    Long tweetId = (Long) getArguments().getSerializable(EXTRA_TWEET_ID);
-    tweet = timeLine.getTweet(tweetId);
+    String tweetId = (String) getArguments().getSerializable(EXTRA_TWEET_ID);
+    tweet = app.getTweet(tweetId);
   }
 
   /**

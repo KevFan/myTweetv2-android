@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.activities.HomeActivity;
+import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -32,6 +33,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 
 public class MyTweetApp extends Application {
   public List<User> users = new ArrayList<>();
+  public List<Tweet> timeLine = new ArrayList<>();
   public User currentUser = null;
   protected static MyTweetApp app;
 
@@ -160,5 +162,35 @@ public class MyTweetApp extends Application {
     editor.putString("email", currentUser.email);
     editor.putString("password", currentUser.password);
     editor.apply();
+  }
+
+  //
+  public void addTweet(Tweet tweet) {
+    timeLine.add(tweet);
+  }
+
+  /**
+   * Get tweet from ArrayList of tweets
+   *
+   * @param id Id of the tweet
+   * @return Tweet matching with ID
+   */
+  public Tweet getTweet(String id) {
+    for (Tweet tweet : timeLine) {
+      if (tweet._id.equals(id)) {
+        return tweet;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Delete tweet from the ArrayList of tweets
+   *
+   * @param tweet Tweet to remove
+   */
+  public void deleteTweet(Tweet tweet) {
+    timeLine.remove(tweet);
   }
 }

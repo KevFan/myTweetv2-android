@@ -38,7 +38,7 @@ public class DetailTweetPagerActivity extends BaseActivity {
     viewPager = new ViewPager(this);
     viewPager.setId(R.id.viewPager);
     setContentView(viewPager);
-    tweetArrayList = MyTweetApp.getApp().currentUser.timeLine.tweets;
+    tweetArrayList = MyTweetApp.getApp().timeLine;
     PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tweetArrayList);
     viewPager.setAdapter(pagerAdapter);
     setCurrentItem();
@@ -52,7 +52,7 @@ public class DetailTweetPagerActivity extends BaseActivity {
   private void setCurrentItem() {
     Long tweetId = (Long) getIntent().getSerializableExtra(DetailTweetFragment.EXTRA_TWEET_ID);
     for (int i = 0; i < tweetArrayList.size(); i++) {
-      if (tweetArrayList.get(i).id.equals(tweetId)) {
+      if (tweetArrayList.get(i)._id.equals(tweetId)) {
         viewPager.setCurrentItem(i);
         break;
       }
@@ -96,7 +96,7 @@ public class DetailTweetPagerActivity extends BaseActivity {
     public Fragment getItem(int position) {
       Tweet tweet = tweetArrayList.get(position);
       Bundle args = new Bundle();
-      args.putSerializable(DetailTweetFragment.EXTRA_TWEET_ID, tweet.id);
+      args.putSerializable(DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
       DetailTweetFragment fragment = new DetailTweetFragment();
       fragment.setArguments(args);
       return fragment;

@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.models.TimeLine;
 import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -66,7 +65,7 @@ public class SignUp extends BaseActivity {
       } else if (isEmailUsed(emailString)) {
         toastMessage(view.getContext(), "Email already used by another user");
       } else {
-        app.newUser(new User(firstNameString, lastNameString, emailString, passwordString, new TimeLine()));
+        app.newUser(new User(firstNameString, lastNameString, emailString, passwordString));
         toastMessage(view.getContext(), "Successfully Registered");
         startActivity(new Intent(view.getContext(), HomeActivity.class));
       }

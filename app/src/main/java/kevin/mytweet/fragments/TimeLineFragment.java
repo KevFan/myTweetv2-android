@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,17 +19,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.activities.AddTweetActivity;
 import kevin.mytweet.activities.DetailTweetPagerActivity;
-import kevin.mytweet.activities.SettingsActivity;
 import kevin.mytweet.activities.Welcome;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.helpers.IntentHelper;
-import kevin.mytweet.models.TimeLine;
 import kevin.mytweet.models.Tweet;
 
 import android.widget.AbsListView;
@@ -44,7 +40,7 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  */
 
 public class TimeLineFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
-  private TimeLine timeLine;
+  private List<Tweet> timeLine;
   private TimeLineAdapter adapter;
   MyTweetApp app;
   private ListView listView;
@@ -63,9 +59,9 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     getActivity().setTitle(R.string.app_name);
 
     app = MyTweetApp.getApp();
-    timeLine = app.currentUser.timeLine;
+    timeLine = app.timeLine;
 
-    adapter = new TimeLineAdapter(getActivity(), timeLine.tweets);
+    adapter = new TimeLineAdapter(getActivity(), timeLine);
   }
 
   /**
@@ -87,7 +83,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
 
     // If there are tweets, set the no tweets message to invisible
     noTweetMessage = (TextView) view.findViewById(R.id.noTweetsMessage);
-    if (!timeLine.tweets.isEmpty()) {
+    if (!timeLine.isEmpty()) {
       noTweetMessage.setVisibility(View.INVISIBLE);
     }
 
@@ -113,7 +109,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     switch (item.getItemId()) {
       // Deletes all tweets in the timeline of the current user and saves
       case R.id.clearTimeLine:
-        if (timeLine.tweets.isEmpty()) {
+        if (timeLine.isEmpty()) {
           toastMessage(getActivity(), "Have no tweets to delete!!");
         } else {
           // Dialog box to confirm delete tweets
@@ -121,7 +117,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
-                  timeLine.tweets.clear();
+                  timeLine.clear();
                   app.save();
                   adapter.notifyDataSetChanged();
                   noTweetMessage.setVisibility(View.VISIBLE);
@@ -164,7 +160,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   @Override
   public void onResume() {
     super.onResume();
-    if (!timeLine.tweets.isEmpty()) {
+    if (!timeLine.isEmpty()) {
       noTweetMessage.setVisibility(View.INVISIBLE);
     } else {
       noTweetMessage.setVisibility(View.VISIBLE);
@@ -183,7 +179,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     Tweet tweet = adapter.getItem(position);
     IntentHelper.startActivityWithData(getActivity(), DetailTweetPagerActivity.class,
-        DetailTweetFragment.EXTRA_TWEET_ID, tweet.id);
+        DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
   }
 
   /**
@@ -287,7 +283,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   private void deleteTweet(ActionMode actionMode) {
     for (int i = adapter.getCount() - 1; i >= 0; i--) {
       if (listView.isItemChecked(i)) {
-        timeLine.deleteTweet(adapter.getItem(i));
+        app.deleteTweet(adapter.getItem(i));
         app.save();
       }
     }
