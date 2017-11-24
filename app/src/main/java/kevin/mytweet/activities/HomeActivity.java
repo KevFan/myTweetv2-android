@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import kevin.mytweet.R;
+import kevin.mytweet.fragments.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -88,6 +89,8 @@ public class HomeActivity extends AppCompatActivity
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav Home Selected");
     } else if (id == R.id.nav_global_timeline) {
+      Fragment fragment = new GlobalTimeLineFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav TimeLine Selected");
     } else if (id == R.id.nav_setting) {
       toastMessage(this, "Nav Settings Selected");
