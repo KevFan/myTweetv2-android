@@ -117,11 +117,22 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
-                  app.timeLine.clear();
+//                  app.timeLine.clear();
 //                  app.save();
-                  adapter.notifyDataSetChanged();
-                  noTweetMessage.setVisibility(View.VISIBLE);
-                  toastMessage(getActivity(), "All tweets cleared and deleted");
+//                  adapter.notifyDataSetChanged();
+                  Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteAllUserTweet(app.currentUser._id);
+                  call2.enqueue(new Callback<Tweet>() {
+                    @Override
+                    public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+                      updateTimeLine();
+                      toastMessage(getActivity(), "All tweets cleared and deleted");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Tweet> call, Throwable t) {
+                      toastMessage(getActivity(), "All Tweet deletion failed");
+                    }
+                  });
                 }
               });
         }
@@ -358,6 +369,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     }
   }
 
+  // Class to get all user tweets and update app timeline and adapter timeline
   public class GetAllUserTweets implements Callback<List<Tweet>> {
     @Override
     public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {

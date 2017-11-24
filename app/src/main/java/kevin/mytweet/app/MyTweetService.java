@@ -28,12 +28,15 @@ public interface MyTweetService {
   @GET("/api/tweets")
   Call<List<Tweet>> getAllTweets();
 
-  @GET("/api/tweets/users/{id}")
-  Call<List<Tweet>> getAllUserTweets(@Path("id") String id);
+  @GET("/api/tweets/users/{userid}")
+  Call<List<Tweet>> getAllUserTweets(@Path("userid") String id);
 
   @POST("/api/tweets")
   Call<Tweet> createTweet(@Body Tweet tweet);
 
   @DELETE("/api/tweets/{id}")
   Call<Tweet> deleteTweet(@Path("id") String id);
+
+  @DELETE("/api/tweets/users/{userid}")
+  Call<Tweet> deleteAllUserTweet(@Path("userid") String id);
 }
