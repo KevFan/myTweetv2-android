@@ -176,13 +176,14 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    Tweet tweet = adapter.getItem(position);
+    Tweet tweet = adapter.timeLine.get(position);
     IntentHelper.startActivityWithData(getActivity(), DetailTweetPagerActivity.class,
         DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
   }
 
   @Override
   public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+    app.timeLine = response.body();
     adapter.timeLine = response.body();
     setNoTweetMessage();
     adapter.notifyDataSetChanged();
