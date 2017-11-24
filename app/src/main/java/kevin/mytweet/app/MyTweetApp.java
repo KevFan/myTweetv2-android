@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import kevin.mytweet.activities.TimeLineActivity;
+import kevin.mytweet.activities.HomeActivity;
 import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -52,7 +52,7 @@ public class MyTweetApp extends Application {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     if (successLogin(prefs.getString("email", null), prefs.getString("password", null))) {
       info("Logging in previous user: " + prefs.getString("email", null));
-      startActivity(new Intent(this, TimeLineActivity.class));
+      startActivity(new Intent(this, HomeActivity.class));
     } else {
       info("No logged in user detected - starting welcome activity");
     }

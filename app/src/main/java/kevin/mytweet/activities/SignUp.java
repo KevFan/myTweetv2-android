@@ -49,7 +49,7 @@ public class SignUp extends BaseActivity {
   /**
    * Anonymous class listener for the login button
    * Checks for all fields are filled, if the email is in a valid email format and whether the email
-   * is already used before signing up. Starts TimeLineActivity if successfully registered
+   * is already used before signing up. Starts HomeActivity if successfully registered
    */
   private View.OnClickListener signupListener = new View.OnClickListener() {
     @Override
@@ -68,7 +68,7 @@ public class SignUp extends BaseActivity {
       } else {
         app.newUser(new User(firstNameString, lastNameString, emailString, passwordString, new TimeLine()));
         toastMessage(view.getContext(), "Successfully Registered");
-        startActivity(new Intent(view.getContext(), TimeLineActivity.class));
+        startActivity(new Intent(view.getContext(), HomeActivity.class));
       }
     }
   };
