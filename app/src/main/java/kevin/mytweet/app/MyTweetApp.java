@@ -23,6 +23,8 @@ import java.util.List;
 import kevin.mytweet.activities.HomeActivity;
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
@@ -32,6 +34,10 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
  */
 
 public class MyTweetApp extends Application {
+  public MyTweetService tweetService;
+  public boolean         tweetServiceAvailable = false;
+  public String          service_url  = "http://10.3.29.72:4000";   // Standard Emulator IP Address
+
   public List<User> users = new ArrayList<>();
   public List<Tweet> timeLine = new ArrayList<>();
   public User currentUser = null;
@@ -58,6 +64,13 @@ public class MyTweetApp extends Application {
 //    } else {
 //      info("No logged in user detected - starting welcome activity");
 //    }
+    Gson gson = new GsonBuilder().create();
+
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl(service_url)
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .build();
+    tweetService = retrofit.create(MyTweetService.class);
   }
 
   /**
