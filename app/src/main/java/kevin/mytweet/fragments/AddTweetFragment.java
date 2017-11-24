@@ -16,6 +16,9 @@ import java.util.Date;
 
 import kevin.mytweet.R;
 import kevin.mytweet.models.Tweet;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.ContactHelper.sendEmail;
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -26,7 +29,8 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
  * Created by kevin on 20/10/2017.
  */
 
-public class AddTweetFragment extends BaseTweetFragment implements View.OnClickListener, TextWatcher {
+public class AddTweetFragment extends BaseTweetFragment implements View.OnClickListener,
+    TextWatcher, Callback<Tweet> {
 
   private TextView charCount;
   private TextView tweetDate;
@@ -105,8 +109,11 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
         if (tweet.tweetText.equals("")) {
           toastMessage(getActivity(), "Write your message to send tweet");
         } else {
-          app.addTweet(tweet);
+//          app.addTweet(tweet);
 //          app.save();
+          tweet.tweetUser = app.currentUser._id;
+          Call<Tweet> call = (Call<Tweet>) app.tweetService.createTweet(tweet);
+          call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");
           // Finish the activity to reload timeline activity and prevents adding the add tweet
           // to the back stack
@@ -156,5 +163,15 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
    */
   @Override
   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+  }
+
+  @Override
+  public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+
+  }
+
+  @Override
+  public void onFailure(Call<Tweet> call, Throwable t) {
+
   }
 }

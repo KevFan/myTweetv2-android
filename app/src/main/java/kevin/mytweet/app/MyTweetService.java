@@ -30,4 +30,7 @@ public interface MyTweetService {
 
   @GET("/api/tweets/users/{id}")
   Call<List<Tweet>> getAllUserTweets(@Path("id") String id);
+
+  @POST("/api/tweets")
+  Call<Tweet> createTweet(@Body Tweet tweet);
 }

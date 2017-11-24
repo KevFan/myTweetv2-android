@@ -12,6 +12,7 @@ public class Tweet {
   public String tweetText;
   public Date tweetDate;
   public String _id;
+  public String tweetUser;
 
   /**
    * Tweet constructor
