@@ -73,9 +73,9 @@ public class DetailTweetFragment extends BaseTweetFragment implements View.OnCli
    * @param tweet Tweet to update views with
    */
   public void updateView(Tweet tweet) {
-    detailCharCount.setText(String.valueOf(140 - tweet.tweetMessage.length()));
+    detailCharCount.setText(String.valueOf(140 - tweet.tweetText.length()));
     detailTweetDate.setText(tweet.tweetDate.toString());
-    detailTweetText.setText(tweet.tweetMessage);
+    detailTweetText.setText(tweet.tweetText);
   }
 
   /**

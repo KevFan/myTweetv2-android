@@ -9,18 +9,18 @@ import java.util.Random;
  */
 
 public class Tweet {
-  public String tweetMessage;
+  public String tweetText;
   public Date tweetDate;
   public String _id;
 
   /**
    * Tweet constructor
    *
-   * @param tweetMessage Tweet message
-   * @param tweetDate    Tweet date
+   * @param tweetText Tweet message
+   * @param tweetDate Tweet date
    */
-  public Tweet(String tweetMessage, Date tweetDate) {
-    this.tweetMessage = tweetMessage;
+  public Tweet(String tweetText, Date tweetDate) {
+    this.tweetText = tweetText;
     this.tweetDate = tweetDate;
   }
 
@@ -30,6 +30,6 @@ public class Tweet {
    * @return String of report
    */
   public String getTweetReport() {
-    return tweetMessage + "\n\n" + tweetDate.toString();
+    return tweetText + "\n\n" + tweetDate.toString();
   }
 }

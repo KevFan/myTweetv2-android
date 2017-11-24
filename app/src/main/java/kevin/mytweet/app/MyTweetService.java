@@ -2,6 +2,7 @@ package kevin.mytweet.app;
 
 import java.util.List;
 
+import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,4 +24,10 @@ public interface MyTweetService {
 
   @POST("/api/users")
   Call<User> createUser(@Body User User);
+
+  @GET("/api/tweets")
+  Call<List<Tweet>> getAllTweets();
+
+  @GET("/api/tweets/users/{id}")
+  Call<List<Tweet>> getAllUserTweets(@Path("id") String id);
 }

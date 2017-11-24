@@ -74,7 +74,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
    */
   public void updateView(Tweet tweet) {
     tweetDate.setText(tweet.tweetDate.toString());
-    tweetText.setText(tweet.tweetMessage);
+    tweetText.setText(tweet.tweetText);
   }
 
   /**
@@ -102,7 +102,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     switch (view.getId()) {
       case R.id.tweetButton:
         // If tweet message is empty
-        if (tweet.tweetMessage.equals("")) {
+        if (tweet.tweetText.equals("")) {
           toastMessage(getActivity(), "Write your message to send tweet");
         } else {
           app.addTweet(tweet);
@@ -141,7 +141,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   public void onTextChanged(CharSequence s, int start, int before, int count) {
     int remainingCarCount = 140 - s.toString().length();
     charCount.setText(String.valueOf(remainingCarCount));
-    tweet.tweetMessage = tweetText.getText().toString();
+    tweet.tweetText = tweetText.getText().toString();
   }
 
   /**

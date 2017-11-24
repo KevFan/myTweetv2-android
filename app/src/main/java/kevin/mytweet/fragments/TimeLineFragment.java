@@ -28,6 +28,9 @@ import kevin.mytweet.activities.Welcome;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.widget.AbsListView;
 import android.view.ActionMode;
@@ -39,8 +42,8 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  * Created by kevin on 20/10/2017.
  */
 
-public class TimeLineFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
-  private List<Tweet> timeLine;
+public class TimeLineFragment extends Fragment implements AdapterView.OnItemClickListener,
+    AbsListView.MultiChoiceModeListener, Callback<List<Tweet>> {
   private TimeLineAdapter adapter;
   MyTweetApp app;
   private ListView listView;
@@ -59,9 +62,8 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     getActivity().setTitle(R.string.app_name);
 
     app = MyTweetApp.getApp();
-    timeLine = app.timeLine;
 
-    adapter = new TimeLineAdapter(getActivity(), timeLine);
+    adapter = new TimeLineAdapter(getActivity(), app.timeLine);
   }
 
   /**
@@ -83,9 +85,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
 
     // If there are tweets, set the no tweets message to invisible
     noTweetMessage = (TextView) view.findViewById(R.id.noTweetsMessage);
-    if (!timeLine.isEmpty()) {
-      noTweetMessage.setVisibility(View.INVISIBLE);
-    }
+    setNoTweetMessage();
 
     FloatingActionButton newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
     newTweet.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +109,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     switch (item.getItemId()) {
       // Deletes all tweets in the timeline of the current user and saves
       case R.id.clearTimeLine:
-        if (timeLine.isEmpty()) {
+        if (app.timeLine.isEmpty()) {
           toastMessage(getActivity(), "Have no tweets to delete!!");
         } else {
           // Dialog box to confirm delete tweets
@@ -117,7 +117,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
-                  timeLine.clear();
+                  app.timeLine.clear();
 //                  app.save();
                   adapter.notifyDataSetChanged();
                   noTweetMessage.setVisibility(View.VISIBLE);
@@ -160,11 +160,10 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   @Override
   public void onResume() {
     super.onResume();
-    if (!timeLine.isEmpty()) {
-      noTweetMessage.setVisibility(View.INVISIBLE);
-    } else {
-      noTweetMessage.setVisibility(View.VISIBLE);
-    }
+    setNoTweetMessage();
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
+    info(app.currentUser._id);
+    call.enqueue(this);
   }
 
   /**
@@ -182,11 +181,26 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
         DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
   }
 
+  @Override
+  public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+    adapter.timeLine = response.body();
+    setNoTweetMessage();
+    adapter.notifyDataSetChanged();
+    toastMessage(getActivity(), "Successfully got all user tweets");
+  }
+
+  @Override
+  public void onFailure(Call<List<Tweet>> call, Throwable t) {
+    app.tweetServiceAvailable = false;
+    toastMessage(getActivity(), "Failed getting all user tweets :(");
+  }
+
   /**
    * Custom adaptor for the timeline fragment to list tweets
    */
   class TimeLineAdapter extends ArrayAdapter<Tweet> {
     private Context context;
+    private List<Tweet> timeLine;
 
     /**
      * TimeLineAdapter constructor
@@ -197,6 +211,7 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     private TimeLineAdapter(Context context, List<Tweet> tweets) {
       super(context, 0, tweets);
       this.context = context;
+      this.timeLine = tweets;
     }
 
     /**
@@ -214,16 +229,21 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
         convertView = inflater.inflate(R.layout.list_item_tweet, null);
       }
 
-      Tweet tweet = getItem(position);
+      Tweet tweet = timeLine.get(position);
 
       TextView tweetText = (TextView) convertView.findViewById(R.id.list_item_tweetText);
-      tweetText.setText(tweet.tweetMessage);
+      tweetText.setText(tweet.tweetText);
       tweetText.setMaxLines(1);
 
       TextView tweetDate = (TextView) convertView.findViewById(R.id.list_item_tweetDate);
       tweetDate.setText(tweet.tweetDate.toString());
 
       return convertView;
+    }
+
+    @Override
+    public int getCount() {
+      return timeLine.size();
     }
   }
 
@@ -329,5 +349,13 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     editor.putString("email", "");
     editor.putString("password", "");
     editor.apply();
+  }
+
+  private void setNoTweetMessage() {
+    if (!adapter.timeLine.isEmpty()) {
+      noTweetMessage.setVisibility(View.INVISIBLE);
+    } else {
+      noTweetMessage.setVisibility(View.VISIBLE);
+    }
   }
 }
