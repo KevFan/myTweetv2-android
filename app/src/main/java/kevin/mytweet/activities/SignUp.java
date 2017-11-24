@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -19,7 +23,7 @@ import static kevin.mytweet.helpers.ValidatorHelpers.*;
  * Created by kevin on 09/10/2017.
  */
 
-public class SignUp extends BaseActivity {
+public class SignUp extends BaseActivity implements Callback<User> {
   private TextView firstName;
   private TextView lastName;
   private TextView email;
@@ -45,6 +49,23 @@ public class SignUp extends BaseActivity {
     signup.setOnClickListener(signupListener);
   }
 
+  @Override
+  public void onResponse(Call<User> call, Response<User> response)
+  {
+    app.users.add(response.body());
+    app.currentUser = response.body();
+    toastMessage(this, "Successfully Registered");
+    startActivity(new Intent(this, HomeActivity.class));
+  }
+
+  @Override
+  public void onFailure(Call<User> call, Throwable t)
+  {
+    app.tweetServiceAvailable = false;
+    toastMessage(this, "MyTweet Service Unavailable. Try again later");
+    startActivity (new Intent(this, Welcome.class));
+  }
+
   /**
    * Anonymous class listener for the login button
    * Checks for all fields are filled, if the email is in a valid email format and whether the email
@@ -65,9 +86,10 @@ public class SignUp extends BaseActivity {
       } else if (isEmailUsed(emailString)) {
         toastMessage(view.getContext(), "Email already used by another user");
       } else {
-        app.newUser(new User(firstNameString, lastNameString, emailString, passwordString));
-        toastMessage(view.getContext(), "Successfully Registered");
-        startActivity(new Intent(view.getContext(), HomeActivity.class));
+//        app.newUser(new User(firstNameString, lastNameString, emailString, passwordString));
+        Call<User> call = (Call<User>) app.tweetService.createUser
+            (new User(firstNameString, lastNameString, emailString, passwordString));
+        call.enqueue(SignUp.this);
       }
     }
   };
