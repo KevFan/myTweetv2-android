@@ -43,7 +43,7 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  */
 
 public class TimeLineFragment extends Fragment implements AdapterView.OnItemClickListener,
-    AbsListView.MultiChoiceModeListener, Callback<List<Tweet>> {
+    AbsListView.MultiChoiceModeListener {
   private TimeLineAdapter adapter;
   MyTweetApp app;
   private ListView listView;
@@ -161,11 +161,13 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   public void onResume() {
     super.onResume();
     setNoTweetMessage();
-    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
-    info(app.currentUser._id);
-    call.enqueue(this);
+    updateTimeLine();
   }
 
+  public void updateTimeLine() {
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
+    call.enqueue(new GetAllUserTweets());
+  }
   /**
    * Called on click on item in the list view
    *
@@ -179,21 +181,6 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     Tweet tweet = adapter.timeLine.get(position);
     IntentHelper.startActivityWithData(getActivity(), DetailTweetPagerActivity.class,
         DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
-  }
-
-  @Override
-  public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
-    app.timeLine = response.body();
-    adapter.timeLine = response.body();
-    setNoTweetMessage();
-    adapter.notifyDataSetChanged();
-    toastMessage(getActivity(), "Successfully got all user tweets");
-  }
-
-  @Override
-  public void onFailure(Call<List<Tweet>> call, Throwable t) {
-    app.tweetServiceAvailable = false;
-    toastMessage(getActivity(), "Failed getting all user tweets :(");
   }
 
   /**
@@ -304,12 +291,23 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
   private void deleteTweet(ActionMode actionMode) {
     for (int i = adapter.getCount() - 1; i >= 0; i--) {
       if (listView.isItemChecked(i)) {
-        app.deleteTweet(adapter.getItem(i));
+//        app.deleteTweet(adapter.getItem(i));
 //        app.save();
+        Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteTweet(adapter.timeLine.get(i)._id);
+        call2.enqueue(new Callback<Tweet>() {
+          @Override
+          public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+          }
+
+          @Override
+          public void onFailure(Call<Tweet> call, Throwable t) {
+            toastMessage(getActivity(), "Tweet deletion failed");
+          }
+        });
       }
     }
     actionMode.finish();
-    adapter.notifyDataSetChanged();
+    updateTimeLine();
   }
 
   /**
@@ -358,5 +356,23 @@ public class TimeLineFragment extends Fragment implements AdapterView.OnItemClic
     } else {
       noTweetMessage.setVisibility(View.VISIBLE);
     }
+  }
+
+  public class GetAllUserTweets implements Callback<List<Tweet>> {
+    @Override
+    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      app.timeLine = response.body();
+      adapter.timeLine = response.body();
+      setNoTweetMessage();
+      adapter.notifyDataSetChanged();
+      toastMessage(getActivity(), "Successfully got all user tweets");
+    }
+
+    @Override
+    public void onFailure(Call<List<Tweet>> call, Throwable t) {
+      app.tweetServiceAvailable = false;
+      toastMessage(getActivity(), "Failed getting all user tweets :(");
+    }
+
   }
 }

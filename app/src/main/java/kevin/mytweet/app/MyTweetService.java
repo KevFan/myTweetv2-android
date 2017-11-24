@@ -33,4 +33,7 @@ public interface MyTweetService {
 
   @POST("/api/tweets")
   Call<Tweet> createTweet(@Body Tweet tweet);
+
+  @DELETE("/api/tweets/{id}")
+  Call<Tweet> deleteTweet(@Path("id") String id);
 }
