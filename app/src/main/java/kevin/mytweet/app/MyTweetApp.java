@@ -36,7 +36,8 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 public class MyTweetApp extends Application {
   public MyTweetService tweetService;
   public boolean         tweetServiceAvailable = false;
-  public String          service_url  = "http://192.168.0.8:4000";   // Standard Emulator IP Address
+//  public String          service_url  = "http://192.168.0.8:4000";   // Standard Emulator IP Address
+  public String          service_url  = "https://test-remote-myweet.herokuapp.com";   // Standard Emulator IP Address
 
   public List<User> users = new ArrayList<>();
   public List<Tweet> timeLine = new ArrayList<>();
