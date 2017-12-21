@@ -35,8 +35,7 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  * Created by kevin on 20/10/2017.
  */
 
-public class TimeLineFragment extends BaseTimeLineFragment implements AdapterView.OnItemClickListener,
-    AbsListView.MultiChoiceModeListener {
+public class TimeLineFragment extends BaseTimeLineFragment implements AbsListView.MultiChoiceModeListener {
 
   /**
    * Called when fragment is first created
@@ -63,7 +62,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AdapterVie
     View view = super.onCreateView(inflater, parent, savedInstanceState);
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
     listView.setMultiChoiceModeListener(this);
-    listView.setOnItemClickListener(this);
 
     return view;
   }
@@ -149,23 +147,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AdapterVie
     Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
     call.enqueue(new GetAllUserTweets());
   }
-
-  /**
-   * Called on click on item in the list view
-   *
-   * @param parent   Adapter view
-   * @param view     view
-   * @param position position of view
-   * @param id       id
-   */
-  @Override
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    Tweet tweet = adapter.timeLine.get(position);
-    IntentHelper.startActivityWithData(getActivity(), DetailTweetPagerActivity.class,
-        DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
-  }
-
-
 
   /* ************ MultiChoiceModeListener methods (begin) *********** */
 

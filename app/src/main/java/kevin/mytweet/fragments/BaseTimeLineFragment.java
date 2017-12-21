@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,7 +17,9 @@ import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.activities.AddTweetActivity;
+import kevin.mytweet.activities.DetailTweetPagerActivity;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -25,7 +28,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
  * Created by kevin on 24/11/2017.
  */
 
-public class BaseTimeLineFragment extends Fragment {
+public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItemClickListener {
   protected TimeLineAdapter adapter;
   MyTweetApp app;
   protected ListView listView;
@@ -58,6 +61,7 @@ public class BaseTimeLineFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_home, parent, false);
     listView = (ListView) view.findViewById(R.id.tweetList);
     listView.setAdapter(adapter);
+    listView.setOnItemClickListener(this);
 
     // If there are tweets, set the no tweets message to invisible
     noTweetMessage = (TextView) view.findViewById(R.id.noTweetsMessage);
@@ -140,4 +144,20 @@ public class BaseTimeLineFragment extends Fragment {
     setNoTweetMessage();
     adapter.notifyDataSetChanged();
   }
+
+  /**
+   * Called on click on item in the list view
+   *
+   * @param parent   Adapter view
+   * @param view     view
+   * @param position position of view
+   * @param id       id
+   */
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    Tweet tweet = adapter.timeLine.get(position);
+    IntentHelper.startActivityWithData(getActivity(), DetailTweetPagerActivity.class,
+        DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
+  }
+
 }
