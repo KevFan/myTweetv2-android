@@ -93,7 +93,7 @@ public class MyTweetApp extends Application {
     users.add(user);
 //    save();
     currentUser = user;
-    setPreferenceSettings();
+//    setPreferenceSettings();
   }
 
   /**
@@ -108,7 +108,7 @@ public class MyTweetApp extends Application {
     for (User user : users) {
       if (user.email.equals(email) && user.password.equals(password)) {
         currentUser = user;
-        setPreferenceSettings();
+//        setPreferenceSettings();
         info("Logged in: " + user.toString());
         return true;
       }
@@ -163,20 +163,20 @@ public class MyTweetApp extends Application {
 //
 //    return users;
 //  }
-
-  /**
-   * Sets shared preference values to current user
-   */
-  public void setPreferenceSettings() {
-    info("MyTweetApp - setting shared preference to current user");
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    SharedPreferences.Editor editor = prefs.edit();
-    editor.putString("firstName", currentUser.firstName);
-    editor.putString("lastName", currentUser.lastName);
-    editor.putString("email", currentUser.email);
-    editor.putString("password", currentUser.password);
-    editor.apply();
-  }
+//
+//  /**
+//   * Sets shared preference values to current user
+//   */
+//  public void setPreferenceSettings() {
+//    info("MyTweetApp - setting shared preference to current user");
+//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//    SharedPreferences.Editor editor = prefs.edit();
+//    editor.putString("firstName", currentUser.firstName);
+//    editor.putString("lastName", currentUser.lastName);
+//    editor.putString("email", currentUser.email);
+//    editor.putString("password", currentUser.password);
+//    editor.apply();
+//  }
 
   //
   public void addTweet(Tweet tweet) {

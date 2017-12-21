@@ -50,7 +50,7 @@
                 android:value=".activities.HomeActivity"/>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activities.PreferenceActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait">

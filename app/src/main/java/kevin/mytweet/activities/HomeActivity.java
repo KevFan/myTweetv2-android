@@ -17,6 +17,7 @@ import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.fragments.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
+import kevin.mytweet.fragments.UpdateAccountFragment;
 import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -98,9 +99,9 @@ public class HomeActivity extends AppCompatActivity
       Fragment fragment = new GlobalTimeLineFragment();
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav TimeLine Selected");
-    } else if (id == R.id.nav_setting) {
+    } else if (id == R.id.nav_preferences) {
       toastMessage(this, "Nav Settings Selected");
-      startActivity(new Intent(this, SettingsActivity.class));
+      startActivity(new Intent(this, PreferenceActivity.class));
     }
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

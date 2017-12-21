@@ -17,9 +17,9 @@
     <item android:title="Account">
         <menu>
             <item
-                android:id="@+id/nav_setting"
+                android:id="@+id/nav_preferences"
                 android:icon="@drawable/ic_menu_setting"
-                android:title="Settings"/>
+                android:title="Preferences"/>
         </menu>
     </item>
 
