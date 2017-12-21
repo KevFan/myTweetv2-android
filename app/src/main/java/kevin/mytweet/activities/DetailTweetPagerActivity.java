@@ -14,7 +14,9 @@ import kevin.mytweet.fragments.DetailTweetFragment;
 import kevin.mytweet.models.Tweet;
 
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.MenuItem;
 
+import static kevin.mytweet.helpers.IntentHelper.navigateUp;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**
@@ -100,6 +102,23 @@ public class DetailTweetPagerActivity extends BaseActivity {
       DetailTweetFragment fragment = new DetailTweetFragment();
       fragment.setArguments(args);
       return fragment;
+    }
+  }
+
+  /**
+   * Menu Item selector - only used for navigate up to previous activity here
+   *
+   * @param item Menu item
+   * @return Boolean
+   */
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    info("Detail Pager Activity - navigated up pressed");
+    if (item.getItemId() == android.R.id.home) {
+      this.finish();
+      return true;
+    } else{
+      return super.onOptionsItemSelected(item);
     }
   }
 }
