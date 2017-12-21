@@ -102,6 +102,9 @@ public class HomeActivity extends AppCompatActivity
     } else if (id == R.id.nav_preferences) {
       toastMessage(this, "Nav Settings Selected");
       startActivity(new Intent(this, PreferenceActivity.class));
+    } else if (id == R.id.nav_settings) {
+      Fragment fragment = new UpdateAccountFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
     }
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

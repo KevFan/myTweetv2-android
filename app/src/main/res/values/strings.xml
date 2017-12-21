@@ -33,4 +33,5 @@
     <string name="userNameSummary">What\'s your user name?</string>
     <string name="refresh">Refresh Interval</string>
     <string name="refreshSummary">How frequently should data refresh?</string>
+    <string name="updateAccount">Update Account</string>
 </resources>
