@@ -11,10 +11,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import kevin.mytweet.R;
+import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.fragments.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
+import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -22,6 +25,7 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
+  public User currentUser = MyTweetApp.getApp().currentUser;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     info("Home Activity Stared");
@@ -38,6 +42,8 @@ public class HomeActivity extends AppCompatActivity
 
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
+    ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
+    ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
 
     // Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
