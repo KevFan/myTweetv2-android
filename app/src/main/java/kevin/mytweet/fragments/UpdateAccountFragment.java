@@ -1,11 +1,8 @@
 package kevin.mytweet.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,30 +10,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.Date;
-
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.models.Tweet;
+
 import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static kevin.mytweet.helpers.ContactHelper.sendEmail;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
- * Add Tweet Fragment - used to add tweet
+ * UpdateAccountFragment - used to update account details
  * Created by kevin on 20/10/2017.
  */
 
-public class UpdateAccountFragment extends Fragment implements Callback<Tweet> {
+public class UpdateAccountFragment extends Fragment implements Callback<User> {
   private EditText firstName;
   private EditText lastName;
   private EditText email;
   private EditText password;
+  public MyTweetApp app = MyTweetApp.getApp();
 
   /**
    * Called to create the view hierarchy associated with the fragment
@@ -61,6 +56,10 @@ public class UpdateAccountFragment extends Fragment implements Callback<Tweet> {
       @Override
       public void onClick(View v) {
         toastMessage(getActivity(), "Update Button Pressed");
+        Call<User> call = (Call<User>) app.tweetService.updateUser(app.currentUser._id,
+            new User(firstName.getText().toString(), lastName.getText().toString()
+                , email.getText().toString(), password.getText().toString()));
+        call.enqueue(UpdateAccountFragment.this);
       }
     });
     return view;
@@ -79,12 +78,18 @@ public class UpdateAccountFragment extends Fragment implements Callback<Tweet> {
   }
 
   @Override
-  public void onResponse(Call<Tweet> call, Response<Tweet> response) {
-
+  public void onResponse(Call<User> call, Response<User> response) {
+    app.currentUser = response.body();
+    NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+    ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name))
+        .setText(app.currentUser.firstName + ' ' + app.currentUser.lastName);
+    ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(app.currentUser.email);
+    toastMessage(getActivity(), "Successfully Updated");
   }
 
   @Override
-  public void onFailure(Call<Tweet> call, Throwable t) {
-
+  public void onFailure(Call<User> call, Throwable t) {
+    toastMessage(getActivity(), "Failed to update");
+    info(t.toString());
   }
 }
