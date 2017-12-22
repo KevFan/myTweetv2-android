@@ -11,9 +11,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import kevin.mytweet.R;
+import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.fragments.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
+import kevin.mytweet.fragments.UpdateAccountFragment;
+import kevin.mytweet.models.User;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -21,6 +26,7 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
+  public User currentUser = MyTweetApp.getApp().currentUser;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     info("Home Activity Stared");
@@ -37,6 +43,8 @@ public class HomeActivity extends AppCompatActivity
 
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
+    ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
+    ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
 
     // Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
@@ -88,10 +96,15 @@ public class HomeActivity extends AppCompatActivity
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav Home Selected");
     } else if (id == R.id.nav_global_timeline) {
+      Fragment fragment = new GlobalTimeLineFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav TimeLine Selected");
-    } else if (id == R.id.nav_setting) {
+    } else if (id == R.id.nav_preferences) {
       toastMessage(this, "Nav Settings Selected");
-      startActivity(new Intent(this, SettingsActivity.class));
+      startActivity(new Intent(this, PreferenceActivity.class));
+    } else if (id == R.id.nav_settings) {
+      Fragment fragment = new UpdateAccountFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
     }
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
