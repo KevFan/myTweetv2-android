@@ -51,7 +51,7 @@ public class Login extends BaseActivity {
       if (emailString.isEmpty() || passwordString.isEmpty()) {
         toastMessage(view.getContext(), "Fill in all information to sign in !!");
       } else if (app.successLogin(emailString, passwordString)) {
-        startActivity(new Intent(view.getContext(), TimeLineActivity.class));
+        startActivity(new Intent(view.getContext(), HomeActivity.class));
         toastMessage(view.getContext(), "Login Successful !!");
       } else {
         toastMessage(view.getContext(), "Email/Password incorrect !!");

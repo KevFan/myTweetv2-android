@@ -14,7 +14,9 @@ import kevin.mytweet.fragments.DetailTweetFragment;
 import kevin.mytweet.models.Tweet;
 
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.MenuItem;
 
+import static kevin.mytweet.helpers.IntentHelper.navigateUp;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**
@@ -38,7 +40,7 @@ public class DetailTweetPagerActivity extends BaseActivity {
     viewPager = new ViewPager(this);
     viewPager.setId(R.id.viewPager);
     setContentView(viewPager);
-    tweetArrayList = MyTweetApp.getApp().currentUser.timeLine.tweets;
+    tweetArrayList = MyTweetApp.getApp().timeLine;
     PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tweetArrayList);
     viewPager.setAdapter(pagerAdapter);
     setCurrentItem();
@@ -50,9 +52,9 @@ public class DetailTweetPagerActivity extends BaseActivity {
    * Ensure selected tweet is shown in detail tweet view
    */
   private void setCurrentItem() {
-    Long tweetId = (Long) getIntent().getSerializableExtra(DetailTweetFragment.EXTRA_TWEET_ID);
+    String tweetId = (String) getIntent().getSerializableExtra(DetailTweetFragment.EXTRA_TWEET_ID);
     for (int i = 0; i < tweetArrayList.size(); i++) {
-      if (tweetArrayList.get(i).id.equals(tweetId)) {
+      if (tweetArrayList.get(i)._id.equals(tweetId)) {
         viewPager.setCurrentItem(i);
         break;
       }
@@ -96,10 +98,27 @@ public class DetailTweetPagerActivity extends BaseActivity {
     public Fragment getItem(int position) {
       Tweet tweet = tweetArrayList.get(position);
       Bundle args = new Bundle();
-      args.putSerializable(DetailTweetFragment.EXTRA_TWEET_ID, tweet.id);
+      args.putSerializable(DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
       DetailTweetFragment fragment = new DetailTweetFragment();
       fragment.setArguments(args);
       return fragment;
+    }
+  }
+
+  /**
+   * Menu Item selector - only used for navigate up to previous activity here
+   *
+   * @param item Menu item
+   * @return Boolean
+   */
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    info("Detail Pager Activity - navigated up pressed");
+    if (item.getItemId() == android.R.id.home) {
+      this.finish();
+      return true;
+    } else{
+      return super.onOptionsItemSelected(item);
     }
   }
 }

@@ -6,7 +6,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.List;
+
 import kevin.mytweet.R;
+import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.app.MyTweetService;
+import kevin.mytweet.models.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
@@ -14,7 +22,8 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
  * Welcome Activity
  */
 
-public class Welcome extends AppCompatActivity implements View.OnClickListener {
+public class Welcome extends AppCompatActivity implements View.OnClickListener, Callback<List<User>> {
+  public MyTweetApp app = MyTweetApp.getApp();
 
   /**
    * Called when activity is first created
@@ -48,5 +57,35 @@ public class Welcome extends AppCompatActivity implements View.OnClickListener {
         toastMessage(this, "Welcome - Something is wrong :/ ");
         break;
     }
+  }
+
+  @Override
+  public void onResume()
+  {
+    super.onResume();
+    app.currentUser = null;
+    Call<List<User>> call1 = (Call<List<User>>) app.tweetService.getAllUsers();
+    call1.enqueue(this);
+  }
+
+  @Override
+  public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+    serviceAvailableMessage();
+    app.users = response.body();
+    app.tweetServiceAvailable = true;
+  }
+
+  @Override
+  public void onFailure(Call<List<User>> call, Throwable t) {
+    app.tweetServiceAvailable = false;
+    serviceUnavailableMessage();
+  }
+
+  void serviceUnavailableMessage() {
+    toastMessage(this, "MyTweet Service Unavailable. Try again later");
+  }
+
+  void serviceAvailableMessage() {
+    toastMessage(this, "MyTweet Service Contacted Successfully");
   }
 }

@@ -3,8 +3,6 @@ package kevin.mytweet.fragments;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ListFragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,21 +12,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.activities.DetailTweetPagerActivity;
-import kevin.mytweet.activities.SettingsActivity;
 import kevin.mytweet.activities.Welcome;
-import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.helpers.IntentHelper;
-import kevin.mytweet.models.TimeLine;
 import kevin.mytweet.models.Tweet;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.widget.AbsListView;
 import android.view.ActionMode;
@@ -40,12 +35,7 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  * Created by kevin on 20/10/2017.
  */
 
-public class TimeLineFragment extends ListFragment implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
-  private TimeLine timeLine;
-  private TimeLineAdapter adapter;
-  MyTweetApp app;
-  private ListView listView;
-  private TextView noTweetMessage;
+public class TimeLineFragment extends BaseTimeLineFragment implements AbsListView.MultiChoiceModeListener {
 
   /**
    * Called when fragment is first created
@@ -57,13 +47,6 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
     info("TweetLineFragement created");
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
-    getActivity().setTitle(R.string.app_name);
-
-    app = MyTweetApp.getApp();
-    timeLine = app.currentUser.timeLine;
-
-    adapter = new TimeLineAdapter(getActivity(), timeLine.tweets);
-    setListAdapter(adapter);
   }
 
   /**
@@ -77,33 +60,10 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
     View view = super.onCreateView(inflater, parent, savedInstanceState);
-    listView = (ListView) view.findViewById(android.R.id.list);
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
     listView.setMultiChoiceModeListener(this);
 
-    // If there are tweets, set the no tweets message to invisible
-    noTweetMessage = (TextView) getActivity().findViewById(R.id.noTweetsMessage);
-    if (!timeLine.tweets.isEmpty()) {
-      noTweetMessage.setVisibility(View.INVISIBLE);
-    }
-
     return view;
-  }
-
-  /**
-   * Called when an item in the list fragment is clicked
-   *
-   * @param l        list view
-   * @param view     view
-   * @param position position of the item
-   * @param id       id
-   */
-  @Override
-  public void onListItemClick(ListView l, View view, int position, long id) {
-    Tweet tweet = ((TimeLineAdapter) getListAdapter()).getItem(position);
-    Intent intent = new Intent(getActivity(), DetailTweetPagerActivity.class);
-    intent.putExtra(DetailTweetFragment.EXTRA_TWEET_ID, tweet.id);
-    startActivityForResult(intent, 0);
   }
 
   /**
@@ -117,7 +77,7 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
     switch (item.getItemId()) {
       // Deletes all tweets in the timeline of the current user and saves
       case R.id.clearTimeLine:
-        if (timeLine.tweets.isEmpty()) {
+        if (app.timeLine.isEmpty()) {
           toastMessage(getActivity(), "Have no tweets to delete!!");
         } else {
           // Dialog box to confirm delete tweets
@@ -125,18 +85,25 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
-                  timeLine.tweets.clear();
-                  app.save();
-                  adapter.notifyDataSetChanged();
-                  noTweetMessage.setVisibility(View.VISIBLE);
-                  toastMessage(getActivity(), "All tweets cleared and deleted");
+//                  app.timeLine.clear();
+//                  app.save();
+//                  adapter.notifyDataSetChanged();
+                  Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteAllUserTweet(app.currentUser._id);
+                  call2.enqueue(new Callback<Tweet>() {
+                    @Override
+                    public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+                      updateTimeLine();
+                      toastMessage(getActivity(), "All tweets cleared and deleted");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Tweet> call, Throwable t) {
+                      toastMessage(getActivity(), "All Tweet deletion failed");
+                    }
+                  });
                 }
               });
         }
-        break;
-      // Starts the settings activity
-      case R.id.menuSettings:
-        startActivity(new Intent(getActivity(), SettingsActivity.class));
         break;
       // Clear entire activity history when logging out so that user can use back button to return
       // to old activities if a different user sign's in
@@ -172,71 +139,13 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
   @Override
   public void onResume() {
     super.onResume();
-    if (!timeLine.tweets.isEmpty()) {
-      noTweetMessage.setVisibility(View.INVISIBLE);
-    } else {
-      noTweetMessage.setVisibility(View.VISIBLE);
-    }
+    setNoTweetMessage();
+    updateTimeLine();
   }
 
-  /**
-   * Called on click on item in the list view
-   *
-   * @param parent   Adapter view
-   * @param view     view
-   * @param position position of view
-   * @param id       id
-   */
-  @Override
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    Tweet tweet = adapter.getItem(position);
-    IntentHelper.startActivityWithData(getActivity(), DetailTweetPagerActivity.class,
-        DetailTweetFragment.EXTRA_TWEET_ID, tweet.id);
-  }
-
-  /**
-   * Custom adaptor for the timeline fragment to list tweets
-   */
-  class TimeLineAdapter extends ArrayAdapter<Tweet> {
-    private Context context;
-
-    /**
-     * TimeLineAdapter constructor
-     *
-     * @param context Context of where the adapter is constructed
-     * @param tweets  ArrayList of tweets
-     */
-    private TimeLineAdapter(Context context, List<Tweet> tweets) {
-      super(context, 0, tweets);
-      this.context = context;
-    }
-
-    /**
-     * Call list_item_tweet for each tweet in ArrayList to display tweet data at specific position
-     *
-     * @param position    position of tweet item
-     * @param convertView View to reuse
-     * @param parent      View parent of where convert view will be attached
-     * @return View with tweet data at specific position
-     */
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      if (convertView == null) {
-        convertView = inflater.inflate(R.layout.list_item_tweet, null);
-      }
-
-      Tweet tweet = getItem(position);
-
-      TextView tweetText = (TextView) convertView.findViewById(R.id.list_item_tweetText);
-      tweetText.setText(tweet.tweetMessage);
-      tweetText.setMaxLines(1);
-
-      TextView tweetDate = (TextView) convertView.findViewById(R.id.list_item_tweetDate);
-      tweetDate.setText(tweet.tweetDate.toString());
-
-      return convertView;
-    }
+  public void updateTimeLine() {
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
+    call.enqueue(new GetAllUserTweets());
   }
 
   /* ************ MultiChoiceModeListener methods (begin) *********** */
@@ -295,19 +204,31 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
   private void deleteTweet(ActionMode actionMode) {
     for (int i = adapter.getCount() - 1; i >= 0; i--) {
       if (listView.isItemChecked(i)) {
-        timeLine.deleteTweet(adapter.getItem(i));
-        app.save();
+//        app.deleteTweet(adapter.getItem(i));
+//        app.save();
+        Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteTweet(adapter.timeLine.get(i)._id);
+        call2.enqueue(new Callback<Tweet>() {
+          @Override
+          public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+          }
+
+          @Override
+          public void onFailure(Call<Tweet> call, Throwable t) {
+            toastMessage(getActivity(), "Tweet deletion failed");
+          }
+        });
       }
     }
     actionMode.finish();
-    adapter.notifyDataSetChanged();
+    updateTimeLine();
   }
 
   /**
-   * Method stub to implement MultiChoiceModeListener interface - unused
+   * Called on preparation of the action mode, sets the title
    */
   @Override
   public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+    actionMode.setTitle("Delete Tweets");
     return false;
   }
 
@@ -340,5 +261,21 @@ public class TimeLineFragment extends ListFragment implements AdapterView.OnItem
     editor.putString("email", "");
     editor.putString("password", "");
     editor.apply();
+  }
+
+
+  // Class to get all user tweets and update app timeline and adapter timeline
+  public class GetAllUserTweets implements Callback<List<Tweet>> {
+    @Override
+    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      updateTimeLineData(response.body());
+      toastMessage(getActivity(), "Successfully got all user tweets");
+    }
+
+    @Override
+    public void onFailure(Call<List<Tweet>> call, Throwable t) {
+      app.tweetServiceAvailable = false;
+      toastMessage(getActivity(), "Failed getting all user tweets :(");
+    }
   }
 }
