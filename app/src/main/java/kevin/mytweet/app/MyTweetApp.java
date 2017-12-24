@@ -21,23 +21,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.activities.HomeActivity;
+import kevin.mytweet.models.Token;
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
+import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
  * MyTweetApp - main application
  * Created by kevin on 12/10/2017.
  */
 
-public class MyTweetApp extends Application {
+public class MyTweetApp extends Application implements Callback<Token> {
   public MyTweetService tweetService;
+  public MyTweetServiceOpen tweetServiceOpen;
   public boolean         tweetServiceAvailable = false;
 //  public String          service_url  = "http://192.168.0.8:4000";   // Standard Emulator IP Address
-  public String          service_url  = "https://test-remote-myweet.herokuapp.com";   // Standard Emulator IP Address
+//  public String          service_url  = "https://test-remote-myweet.herokuapp.com";   // Standard Emulator IP Address
 
   public List<User> users = new ArrayList<>();
   public List<Tweet> timeLine = new ArrayList<>();
@@ -65,13 +71,7 @@ public class MyTweetApp extends Application {
 //    } else {
 //      info("No logged in user detected - starting welcome activity");
 //    }
-    Gson gson = new GsonBuilder().create();
-
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(service_url)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .build();
-    tweetService = retrofit.create(MyTweetService.class);
+    tweetServiceOpen = RetrofitServiceFactory.createService(MyTweetServiceOpen.class);
   }
 
   /**
@@ -81,39 +81,6 @@ public class MyTweetApp extends Application {
    */
   public static MyTweetApp getApp() {
     return app;
-  }
-
-  /**
-   * Add new user to stored list of user, save, set current user to new user and set preference
-   * setting to new user details
-   *
-   * @param user New user to add
-   */
-  public void newUser(User user) {
-    users.add(user);
-//    save();
-    currentUser = user;
-//    setPreferenceSettings();
-  }
-
-  /**
-   * Validates the email and password to stored list of users. If credentials are correct, sets
-   * current user to matching user and set preference setting to matching user
-   *
-   * @param email    email of user
-   * @param password password of user
-   * @return Boolean of whether credentials are valid and successfully logged in user
-   */
-  public boolean successLogin(String email, String password) {
-    for (User user : users) {
-      if (user.email.equals(email) && user.password.equals(password)) {
-        currentUser = user;
-//        setPreferenceSettings();
-        info("Logged in: " + user.toString());
-        return true;
-      }
-    }
-    return false;
   }
 
 //  /**
@@ -206,5 +173,28 @@ public class MyTweetApp extends Application {
    */
   public void deleteTweet(Tweet tweet) {
     timeLine.remove(tweet);
+  }
+
+  public boolean validUser (String email, String password)
+  {
+    User user = new User ("", "", email, password);
+    tweetServiceOpen.authenticate(user);
+    Call<Token> call = (Call<Token>) tweetServiceOpen.authenticate (user);
+    call.enqueue(this);
+    return true;
+  }
+
+  @Override
+  public void onResponse(Call<Token> call, Response<Token> response) {
+    Token auth = response.body();
+    currentUser = auth.user;
+    tweetService =  RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
+    info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
+  }
+
+  @Override
+  public void onFailure(Call<Token> call, Throwable t) {
+    toastMessage(this, "Unable to authenticate with Donation Service");
+    info("Failed to Authenticated!");
   }
 }
