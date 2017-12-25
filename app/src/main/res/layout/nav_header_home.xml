@@ -13,12 +13,28 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@mipmap/ic_launcher_round"/>
+    <!--<ImageView-->
+        <!--android:id="@+id/imageView"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:paddingTop="@dimen/nav_header_vertical_spacing"-->
+        <!--app:srcCompat="@mipmap/ic_launcher_round"/>-->
+
+    <!-- https://github.com/vinc3m1/RoundedImageView -->
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profilePhoto"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:paddingTop="5dp"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/ic_launcher_round"
+        app:riv_border_color="#333333"
+        app:riv_border_width="1dip"
+        app:riv_corner_radius="50dip"
+        app:riv_mutate_background="true"
+
+        app:riv_oval="true"/>
 
     <TextView
         android:id="@+id/nav_name"
