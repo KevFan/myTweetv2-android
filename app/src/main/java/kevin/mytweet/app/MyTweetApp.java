@@ -175,26 +175,31 @@ public class MyTweetApp extends Application implements Callback<Token> {
     timeLine.remove(tweet);
   }
 
-  public boolean validUser (String email, String password)
+  public void validUser (String email, String password)
   {
     User user = new User ("", "", email, password);
-    tweetServiceOpen.authenticate(user);
-    Call<Token> call = (Call<Token>) tweetServiceOpen.authenticate (user);
+    info(user.email + " " + user.password);
+    Call<Token> call = (Call<Token>) tweetServiceOpen.authenticate(user);
     call.enqueue(this);
-    return true;
   }
 
   @Override
   public void onResponse(Call<Token> call, Response<Token> response) {
     Token auth = response.body();
-    currentUser = auth.user;
-    tweetService =  RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
-    info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
+    if(auth.user != null) {
+      currentUser = auth.user;
+      tweetService =  RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
+      info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
+      startActivity(new Intent(this, HomeActivity.class));
+    } else {
+      info("Unauthenticated - invalid credentials");
+      toastMessage(this, "Email/password invalid :(");
+    }
   }
 
   @Override
   public void onFailure(Call<Token> call, Throwable t) {
-    toastMessage(this, "Unable to authenticate with Donation Service");
+    toastMessage(this, "Unable to authenticate with Tweet Service");
     info("Failed to Authenticated!");
   }
 }
