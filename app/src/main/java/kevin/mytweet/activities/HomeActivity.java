@@ -11,7 +11,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
@@ -27,6 +30,8 @@ public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
   public User currentUser = MyTweetApp.getApp().currentUser;
+  public ImageView profilePhoto;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     info("Home Activity Stared");
@@ -45,6 +50,11 @@ public class HomeActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
+    profilePhoto = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
+
+    if (!currentUser.image.equals("")) {
+      Picasso.with(this).load(currentUser.image).into(profilePhoto);
+    }
 
     // Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
