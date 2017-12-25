@@ -111,7 +111,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
         } else {
 //          app.addTweet(tweet);
 //          app.save();
-          tweet.tweetUser = app.currentUser._id;
+          tweet.tweetUser = app.currentUser;
           Call<Tweet> call = (Call<Tweet>) app.tweetService.createTweet(tweet);
           call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");
@@ -172,6 +172,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
 
   @Override
   public void onFailure(Call<Tweet> call, Throwable t) {
+    info(t.toString());
     toastMessage(getActivity(), "Message fail to save, please try again !! ");
   }
 }
