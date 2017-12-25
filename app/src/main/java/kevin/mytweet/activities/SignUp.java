@@ -55,7 +55,8 @@ public class SignUp extends BaseActivity implements Callback<User> {
     app.users.add(response.body());
     app.currentUser = response.body();
     toastMessage(this, "Successfully Registered");
-    startActivity(new Intent(this, HomeActivity.class));
+//    startActivity(new Intent(this, HomeActivity.class));
+    app.validUser(email.getText().toString(), password.getText().toString());
   }
 
   @Override
@@ -87,7 +88,7 @@ public class SignUp extends BaseActivity implements Callback<User> {
         toastMessage(view.getContext(), "Email already used by another user");
       } else {
 //        app.newUser(new User(firstNameString, lastNameString, emailString, passwordString));
-        Call<User> call = (Call<User>) app.tweetService.createUser
+        Call<User> call = (Call<User>) app.tweetServiceOpen.createUser
             (new User(firstNameString, lastNameString, emailString, passwordString));
         call.enqueue(SignUp.this);
       }
