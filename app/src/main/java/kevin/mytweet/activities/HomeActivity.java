@@ -1,15 +1,19 @@
 package kevin.mytweet.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -70,11 +74,7 @@ public class HomeActivity extends AppCompatActivity
     profilePhoto.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+        checkContactsReadPermission();
       }
     });
 
@@ -211,5 +211,50 @@ public class HomeActivity extends AppCompatActivity
       filePath = uri.getPath();
     }
     return filePath;
+  }
+
+  /**
+   * Check for permission to read contacts
+   * https://developer.android.com/training/permissions/requesting.html
+   */
+  private void checkContactsReadPermission() {
+    // Here, thisActivity is the current activity
+    if (ContextCompat.checkSelfPermission(this,
+        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+      //We can request the permission.
+      ActivityCompat.requestPermissions(this,
+          new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PICK_IMAGE);
+    } else {
+      //We already have permission, so go head and read the contact
+      selectImage();
+    }
+  }
+
+  /**
+   * Called after asking for permissions
+   * https://developer.android.com/training/permissions/requesting.html
+   *
+   * @param requestCode  Request code passed in by requestPermissions
+   * @param permissions  requested permissions
+   * @param grantResults result of granting permissions
+   */
+  @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                         int[] grantResults) {
+    if (requestCode == PICK_IMAGE) {
+      if (grantResults.length > 0
+          && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        // permission was granted
+        selectImage();
+      }
+    }
+  }
+
+  public void selectImage() {
+    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
   }
 }
