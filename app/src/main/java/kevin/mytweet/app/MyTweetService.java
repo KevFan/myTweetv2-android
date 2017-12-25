@@ -23,9 +23,6 @@ public interface MyTweetService {
   @GET("/api/users/{id}")
   Call<User> getUser(@Path("id") String id);
 
-  @POST("/api/users")
-  Call<User> createUser(@Body User User);
-
   @PUT("/api/users/{id}")
   Call<User> updateUser(@Path("id") String id, @Body User User);
 
