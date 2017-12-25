@@ -15,7 +15,7 @@ import retrofit2.Retrofit.Builder;
  */
 
 public class RetrofitServiceFactory {
-  public static final String API_BASE_URL = "https://mytweet2-test.glitch.me";
+  public static final String API_BASE_URL = "http://192.168.0.8:4000";
 
   private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
