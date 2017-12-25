@@ -210,6 +210,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
         call2.enqueue(new Callback<Tweet>() {
           @Override
           public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+            updateTimeLine();
           }
 
           @Override
@@ -220,7 +221,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
       }
     }
     actionMode.finish();
-    updateTimeLine();
   }
 
   /**
