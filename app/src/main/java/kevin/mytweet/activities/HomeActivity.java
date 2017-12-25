@@ -1,7 +1,12 @@
 package kevin.mytweet.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,11 +15,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
@@ -22,6 +31,12 @@ import kevin.mytweet.fragments.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
 import kevin.mytweet.models.User;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -31,6 +46,7 @@ public class HomeActivity extends AppCompatActivity
 
   public User currentUser = MyTweetApp.getApp().currentUser;
   public ImageView profilePhoto;
+  public static final int PICK_IMAGE = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +67,16 @@ public class HomeActivity extends AppCompatActivity
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
     profilePhoto = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
+    profilePhoto.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+      }
+    });
 
     if (!currentUser.image.equals("")) {
       Picasso.with(this).load(currentUser.image).into(profilePhoto);
@@ -120,5 +146,70 @@ public class HomeActivity extends AppCompatActivity
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     drawer.closeDrawer(GravityCompat.START);
     return true;
+  }
+
+  // TODO: Should use async task for image upload - currently will give timeout if image is large
+  // https://stackoverflow.com/questions/39953457/how-to-upload-image-file-in-retrofit-2
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == PICK_IMAGE) {
+      try {
+        Uri selectedImage = data.getData();
+        File file = new File(getRealPathFromURI_API19(this, selectedImage));
+
+        RequestBody requestFile =
+            RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+            MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+        Call<User> call = (Call<User>) MyTweetApp.getApp().tweetService.updateProfilePicture(currentUser._id, body);
+        call.enqueue(new Callback<User>() {
+          @Override
+          public void onResponse(Call<User> call, Response<User> response) {
+            currentUser = response.body();
+            Picasso.with(HomeActivity.this).load(currentUser.image).into(profilePhoto);
+            toastMessage(HomeActivity.this, "updated profile picture");
+          }
+
+          @Override
+          public void onFailure(Call<User> call, Throwable t) {
+            toastMessage(HomeActivity.this, "i have failed !!!");
+            info(t.toString());
+          }
+        });
+      } catch (Exception e) {
+        info(e.toString());
+      }
+    }
+  }
+
+  // https://stackoverflow.com/questions/29646975/how-to-get-file-path-of-image-from-uri-in-android-lollipop
+  public static String getRealPathFromURI_API19(Context context, Uri uri) {
+    info(uri.getPath());
+    String filePath = "";
+    if (DocumentsContract.isDocumentUri(context, uri)) {
+      String wholeID = DocumentsContract.getDocumentId(uri);
+      info(wholeID);
+      // Split at colon, use second item in the array
+      String[] splits = wholeID.split(":");
+      if (splits.length == 2) {
+        String id = splits[1];
+
+        String[] column = {MediaStore.Images.Media.DATA};
+        // where id is equal to
+        String sel = MediaStore.Images.Media._ID + "=?";
+        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            column, sel, new String[]{id}, null);
+        int columnIndex = cursor.getColumnIndex(column[0]);
+        if (cursor.moveToFirst()) {
+          filePath = cursor.getString(columnIndex);
+        }
+        cursor.close();
+      }
+    } else {
+      filePath = uri.getPath();
+    }
+    return filePath;
   }
 }

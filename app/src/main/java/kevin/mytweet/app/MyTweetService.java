@@ -1,15 +1,20 @@
 package kevin.mytweet.app;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 /**
@@ -25,6 +30,10 @@ public interface MyTweetService {
 
   @PUT("/api/users/{id}")
   Call<User> updateUser(@Path("id") String id, @Body User User);
+
+  @Multipart
+  @PUT("/api/profilePicture/{id}")
+  Call<User> updateProfilePicture(@Path("id") String id, @Part MultipartBody.Part image);
 
   @GET("/api/tweets")
   Call<List<Tweet>> getAllTweets();
