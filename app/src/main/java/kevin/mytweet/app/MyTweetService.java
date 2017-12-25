@@ -35,6 +35,9 @@ public interface MyTweetService {
   @PUT("/api/profilePicture/{id}")
   Call<User> updateProfilePicture(@Path("id") String id, @Part MultipartBody.Part image);
 
+  @DELETE("/api/profilePicture/{id}")
+  Call<User> deleteProfilePicture(@Path("id") String id);
+
   @GET("/api/tweets")
   Call<List<Tweet>> getAllTweets();
 
