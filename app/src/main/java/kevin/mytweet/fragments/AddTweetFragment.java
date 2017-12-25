@@ -115,9 +115,6 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
           Call<Tweet> call = (Call<Tweet>) app.tweetService.createTweet(tweet);
           call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");
-          // Finish the activity to reload timeline activity and prevents adding the add tweet
-          // to the back stack
-          getActivity().finish();
         }
         break;
       case R.id.selectContactButton:
@@ -167,11 +164,14 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
 
   @Override
   public void onResponse(Call<Tweet> call, Response<Tweet> response) {
-
+    toastMessage(getActivity(), "Message saved !! ");
+    // Finish the activity to reload timeline activity and prevents adding the add tweet
+    // to the back stack
+    getActivity().finish();
   }
 
   @Override
   public void onFailure(Call<Tweet> call, Throwable t) {
-
+    toastMessage(getActivity(), "Message fail to save, please try again !! ");
   }
 }
