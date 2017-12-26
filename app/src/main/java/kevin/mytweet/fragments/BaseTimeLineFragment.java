@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -120,6 +123,13 @@ public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItem
 
       TextView tweetDate = (TextView) convertView.findViewById(R.id.list_item_tweetDate);
       tweetDate.setText(tweet.tweetDate.toString());
+
+      ImageView tweetUserImage = (ImageView) convertView.findViewById(R.id.list_item_tweetUser_image);
+      if (!tweet.tweetUser.image.equals("")) {
+        Picasso.with(getActivity()).load(tweet.tweetUser.image).into(tweetUserImage);
+      } else {
+        tweetUserImage.setImageResource(R.mipmap.ic_launcher_round);
+      }
 
       return convertView;
     }

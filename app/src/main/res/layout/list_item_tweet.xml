@@ -7,37 +7,57 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_activated">
 
+    <!-- https://github.com/vinc3m1/RoundedImageView -->
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/list_item_tweetUser_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="5dp"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/ic_launcher_round"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        app:riv_border_color="#333333"
+        app:riv_border_width="1dip"
+        app:riv_corner_radius="50dip"
+        app:riv_mutate_background="true"
+        app:riv_oval="true"/>
+
     <TextView
         android:id="@+id/list_item_tweetText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="3dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:textStyle="bold"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/list_item_tweetUser_image"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/list_item_tweetDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:paddingTop="4dp"
-        app:layout_constraintTop_toBottomOf="@+id/list_item_tweetText"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/list_item_tweetUser_image"
+        app:layout_constraintTop_toBottomOf="@+id/list_item_tweetText"/>
 
 </android.support.constraint.ConstraintLayout>
