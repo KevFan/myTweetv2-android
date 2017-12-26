@@ -63,12 +63,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
     View view = super.onCreateView(inflater, parent, savedInstanceState);
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
     listView.setMultiChoiceModeListener(this);
-    mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-      @Override
-      public void onRefresh() {
-        updateTimeLine();
-      }
-    });
 
     return view;
   }
@@ -150,6 +144,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
     updateTimeLine();
   }
 
+  @Override
   public void updateTimeLine() {
     Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
     call.enqueue(new GetAllUserTweets());

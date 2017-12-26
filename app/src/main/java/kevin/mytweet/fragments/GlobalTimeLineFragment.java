@@ -21,19 +21,6 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
  */
 
 public class GlobalTimeLineFragment extends BaseTimeLineFragment {
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-    View view = super.onCreateView(inflater, parent, savedInstanceState);
-    mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-      @Override
-      public void onRefresh() {
-        updateTimeLine();
-      }
-    });
-
-    return view;
-  }
-
   /**
    * Whenever the fragment is paused, check should the no tweets message be visible or not
    */
@@ -44,6 +31,7 @@ public class GlobalTimeLineFragment extends BaseTimeLineFragment {
     updateTimeLine();
   }
 
+  @Override
   public void updateTimeLine() {
     Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllTweets();
     call.enqueue(new Callback<List<Tweet>>() {

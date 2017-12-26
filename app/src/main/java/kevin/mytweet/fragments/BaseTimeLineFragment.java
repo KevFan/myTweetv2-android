@@ -32,7 +32,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
  * Created by kevin on 24/11/2017.
  */
 
-public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItemClickListener {
+public abstract class BaseTimeLineFragment extends Fragment implements AdapterView.OnItemClickListener {
   protected TimeLineAdapter adapter;
   MyTweetApp app;
   protected ListView listView;
@@ -73,6 +73,12 @@ public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItem
     setNoTweetMessage();
 
     mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.tweet_swipe_refresh_layout);
+    mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      @Override
+      public void onRefresh() {
+        updateTimeLine();
+      }
+    });
 
     FloatingActionButton newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
     newTweet.setOnClickListener(new View.OnClickListener() {
@@ -174,4 +180,9 @@ public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItem
         DetailTweetFragment.EXTRA_TWEET_ID, tweet._id);
   }
 
+  /**
+   * Classes extending from this class must implement the update timeline method.
+   * Should make relevant retrofit call, and call updateTimeLineData with the response body here
+   */
+  public abstract void updateTimeLine();
 }
