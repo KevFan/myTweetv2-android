@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,6 +63,12 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
     View view = super.onCreateView(inflater, parent, savedInstanceState);
     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
     listView.setMultiChoiceModeListener(this);
+    mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      @Override
+      public void onRefresh() {
+        updateTimeLine();
+      }
+    });
 
     return view;
   }
@@ -268,6 +275,8 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   public class GetAllUserTweets implements Callback<List<Tweet>> {
     @Override
     public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      if (mSwipeRefreshLayout != null)
+        mSwipeRefreshLayout.setRefreshing(false);
       updateTimeLineData(response.body());
       toastMessage(getActivity(), "Successfully got all user tweets");
     }
@@ -275,6 +284,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
     @Override
     public void onFailure(Call<List<Tweet>> call, Throwable t) {
       app.tweetServiceAvailable = false;
+      mSwipeRefreshLayout.setRefreshing(false);
       toastMessage(getActivity(), "Failed getting all user tweets :(");
     }
   }

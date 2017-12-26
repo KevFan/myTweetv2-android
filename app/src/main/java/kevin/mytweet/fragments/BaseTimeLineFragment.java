@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItem
   MyTweetApp app;
   protected ListView listView;
   protected TextView noTweetMessage;
+  protected SwipeRefreshLayout mSwipeRefreshLayout;
 
   /**
    * Called when fragment is first created
@@ -69,6 +71,8 @@ public class BaseTimeLineFragment extends Fragment implements AdapterView.OnItem
     // If there are tweets, set the no tweets message to invisible
     noTweetMessage = (TextView) view.findViewById(R.id.noTweetsMessage);
     setNoTweetMessage();
+
+    mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.tweet_swipe_refresh_layout);
 
     FloatingActionButton newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
     newTweet.setOnClickListener(new View.OnClickListener() {
