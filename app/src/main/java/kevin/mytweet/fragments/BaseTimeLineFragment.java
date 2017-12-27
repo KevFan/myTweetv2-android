@@ -167,7 +167,7 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
   }
 
   public void updateTimeLineData(List<Tweet> updatedTimeline) {
-    app.timeLine = updatedTimeline;
+//    app.timeLine = updatedTimeline;
     adapter.timeLine = updatedTimeline;
     setNoTweetMessage();
     adapter.notifyDataSetChanged();
