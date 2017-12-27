@@ -134,11 +134,19 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
       TextView tweetDate = (TextView) convertView.findViewById(R.id.list_item_tweetDate);
       tweetDate.setText(tweet.tweetDate.toString());
 
+      TextView tweetUserName = (TextView) convertView.findViewById(R.id.list_item_tweetUserName);
+      tweetUserName.setText(tweet.tweetUser.firstName + " " + tweet.tweetUser.lastName);
+
       ImageView tweetUserImage = (ImageView) convertView.findViewById(R.id.list_item_tweetUser_image);
       if (!tweet.tweetUser.image.equals("")) {
         Picasso.with(getActivity()).load(tweet.tweetUser.image).into(tweetUserImage);
       } else {
         tweetUserImage.setImageResource(R.mipmap.ic_launcher_round);
+      }
+
+      ImageView tweetImage = (ImageView) convertView.findViewById(R.id.list_item_tweetImage);
+      if (!tweet.tweetImage.equals("")) {
+        Picasso.with(getActivity()).load(tweet.tweetImage).into(tweetImage);
       }
 
       return convertView;
