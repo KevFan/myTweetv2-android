@@ -1,8 +1,14 @@
 package kevin.mytweet.fragments;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,10 +18,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+
+import java.io.File;
 import java.util.Date;
 
 import kevin.mytweet.R;
 import kevin.mytweet.models.Tweet;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +34,8 @@ import retrofit2.Response;
 import static kevin.mytweet.helpers.ContactHelper.sendEmail;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.PictureHelper.PICK_IMAGE;
+import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
 
 /**
  * Add Tweet Fragment - used to add tweet
@@ -35,6 +48,8 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   private TextView charCount;
   private TextView tweetDate;
   private EditText tweetText;
+
+  private File imageFile = null;
 
   /**
    * Called when fragment is first created
@@ -90,10 +105,12 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     Button tweetButton = (Button) view.findViewById(R.id.tweetButton);
     Button selectContactButton = (Button) view.findViewById(R.id.selectContactButton);
     Button emailViaButton = (Button) view.findViewById(R.id.emailViaButton);
+    FloatingActionButton selectImageFB = (FloatingActionButton) view.findViewById(R.id.selectImageFB);
 
     tweetButton.setOnClickListener(this);
     selectContactButton.setOnClickListener(this);
     emailViaButton.setOnClickListener(this);
+    selectImageFB.setOnClickListener(this);
   }
 
   /**
@@ -111,8 +128,22 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
         } else {
 //          app.addTweet(tweet);
 //          app.save();
-          tweet.tweetUser = app.currentUser;
-          Call<Tweet> call = (Call<Tweet>) app.tweetService.createTweet(tweet);
+          Call<Tweet> call;
+          if (imageFile == null) {
+            call = (Call<Tweet>) app.tweetService.createTweet(tweet);
+          } else {
+            RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
+            MultipartBody.Part body =
+                MultipartBody.Part.createFormData("picture", imageFile.getName(), requestFile);
+            RequestBody tweetText =
+                RequestBody.create(
+                    MediaType.parse("multipart/form-data"), tweet.tweetText);
+            RequestBody tweetDate =
+                RequestBody.create(
+                    MediaType.parse("multipart/form-data"), tweet.tweetDate.toString());
+            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body);
+          }
           call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");
         }
@@ -123,6 +154,10 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
         break;
       case R.id.emailViaButton:
         sendEmail(getActivity(), emailAddress, getString(R.string.tweet_report_title), tweet.getTweetReport());
+        break;
+      case R.id.selectImageFB:
+        toastMessage(getActivity(), "select image button pressed");
+        checkExternalStorageReadPermission();
         break;
       default:
         toastMessage(getActivity(), "Add Tweet Fragment - Something is wrong :/ ");
@@ -174,5 +209,65 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   public void onFailure(Call<Tweet> call, Throwable t) {
     info(t.toString());
     toastMessage(getActivity(), "Message fail to save, please try again !! ");
+  }
+
+  // TODO: Should use async task for image upload - currently will give timeout if image is large
+  // https://stackoverflow.com/questions/39953457/how-to-upload-image-file-in-retrofit-2
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == PICK_IMAGE) {
+      try {
+        Uri selectedImage = data.getData();
+        imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
+        toastMessage(getActivity(), getRealPathFromURI_API19(getActivity(), selectedImage));
+      } catch (Exception e) {
+        info(e.toString());
+      }
+    }
+  }
+
+
+  /**
+   * Check for permission to read contacts
+   * https://developer.android.com/training/permissions/requesting.html
+   */
+  private void checkExternalStorageReadPermission() {
+    // Here, thisActivity is the current activity
+    if (ContextCompat.checkSelfPermission(getActivity(),
+        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+      //We can request the permission.
+      requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PICK_IMAGE);
+    } else {
+      //We already have permission, so go head and read the contact
+      selectImage();
+    }
+  }
+
+  /**
+   * Called after asking for permissions
+   * https://developer.android.com/training/permissions/requesting.html
+   *
+   * @param requestCode  Request code passed in by requestPermissions
+   * @param permissions  requested permissions
+   * @param grantResults result of granting permissions
+   */
+  @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                         int[] grantResults) {
+    if (requestCode == PICK_IMAGE) {
+      if (grantResults.length > 0
+          && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        // permission was granted
+        selectImage();
+      }
+    }
+  }
+
+  public void selectImage() {
+    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
   }
 }

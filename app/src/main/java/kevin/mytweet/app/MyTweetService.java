@@ -44,6 +44,11 @@ public interface MyTweetService {
   @GET("/api/tweets/users/{userid}")
   Call<List<Tweet>> getAllUserTweets(@Path("userid") String id);
 
+  @Multipart
+  @POST("/api/tweets")
+  Call<Tweet> createTweetWithPicture(@Part("tweetText") RequestBody tweetText,
+                          @Part("tweetDate") RequestBody tweetDate, @Part MultipartBody.Part image);
+
   @POST("/api/tweets")
   Call<Tweet> createTweet(@Body Tweet tweet);
 
