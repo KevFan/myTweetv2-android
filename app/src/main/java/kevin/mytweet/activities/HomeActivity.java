@@ -12,11 +12,15 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -34,7 +38,9 @@ import java.io.File;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.fragments.AddTweetFragment;
 import kevin.mytweet.fragments.GlobalTimeLineFragment;
+import kevin.mytweet.fragments.ProfileFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
 import kevin.mytweet.models.User;
@@ -119,9 +125,9 @@ public class HomeActivity extends AppCompatActivity
       Picasso.with(this).load(currentUser.image).into(profilePhoto);
     }
 
-    // Set home view to timeline fragment
+//     Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
-    Fragment fragment = new TimeLineFragment();
+    Fragment fragment = new ProfileFragment();
     manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
   }
 
@@ -165,7 +171,7 @@ public class HomeActivity extends AppCompatActivity
     FragmentManager manager = getSupportFragmentManager();
 
     if (id == R.id.nav_home) {
-      Fragment fragment = new TimeLineFragment();
+      Fragment fragment = new ProfileFragment();
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav Home Selected");
     } else if (id == R.id.nav_global_timeline) {
