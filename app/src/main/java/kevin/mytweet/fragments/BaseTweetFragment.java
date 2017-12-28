@@ -90,8 +90,7 @@ public class BaseTweetFragment extends Fragment {
     if (ContextCompat.checkSelfPermission(getActivity(),
         Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
       //We can request the permission.
-      ActivityCompat.requestPermissions(getActivity(),
-          new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACT);
+      requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACT);
     } else {
       //We already have permission, so go head and read the contact
       readContact();

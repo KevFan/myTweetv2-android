@@ -11,6 +11,7 @@ public class User {
   public String lastName;
   public String email;
   public String password;
+  public String image;
 
   /**
    * User constructor

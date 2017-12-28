@@ -1,5 +1,12 @@
 package kevin.mytweet.fragments;
 
+import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
 import java.util.List;
 
 import kevin.mytweet.models.Tweet;
@@ -24,11 +31,14 @@ public class GlobalTimeLineFragment extends BaseTimeLineFragment {
     updateTimeLine();
   }
 
+  @Override
   public void updateTimeLine() {
     Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllTweets();
     call.enqueue(new Callback<List<Tweet>>() {
       @Override
       public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+        if (mSwipeRefreshLayout != null)
+          mSwipeRefreshLayout.setRefreshing(false);
         updateTimeLineData(response.body());
         toastMessage(getActivity(), "Successfully got all tweets");
       }
@@ -36,6 +46,7 @@ public class GlobalTimeLineFragment extends BaseTimeLineFragment {
       @Override
       public void onFailure(Call<List<Tweet>> call, Throwable t) {
         app.tweetServiceAvailable = false;
+        mSwipeRefreshLayout.setRefreshing(false);
         toastMessage(getActivity(), "Failed getting all user tweets :(");
       }
     });
