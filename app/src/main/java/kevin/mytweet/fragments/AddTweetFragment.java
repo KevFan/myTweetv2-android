@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -48,6 +49,8 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   private TextView charCount;
   private TextView tweetDate;
   private EditText tweetText;
+  private ImageView tweetImage;
+  private TextView tweetUserName;
 
   private File imageFile = null;
 
@@ -78,6 +81,8 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     charCount = (TextView) view.findViewById(R.id.charCount);
     tweetDate = (TextView) view.findViewById(R.id.tweetDate);
     tweetText = (EditText) view.findViewById(R.id.tweetText);
+    tweetUserName = (TextView) view.findViewById(R.id.tweetUserName);
+    tweetImage = (ImageView) view.findViewById(R.id.tweetImage);
     tweetText.addTextChangedListener(this);
     updateView(tweet);
     setListeners(view);
@@ -94,6 +99,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   public void updateView(Tweet tweet) {
     tweetDate.setText(tweet.tweetDate.toString());
     tweetText.setText(tweet.tweetText);
+    tweetUserName.setText(app.currentUser.firstName + " " + app.currentUser.lastName);
   }
 
   /**
@@ -105,12 +111,12 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     Button tweetButton = (Button) view.findViewById(R.id.tweetButton);
     Button selectContactButton = (Button) view.findViewById(R.id.selectContactButton);
     Button emailViaButton = (Button) view.findViewById(R.id.emailViaButton);
-    FloatingActionButton selectImageFB = (FloatingActionButton) view.findViewById(R.id.selectImageFB);
+    Button selectImageButton = (Button) view.findViewById(R.id.selectImageButton);
 
     tweetButton.setOnClickListener(this);
     selectContactButton.setOnClickListener(this);
     emailViaButton.setOnClickListener(this);
-    selectImageFB.setOnClickListener(this);
+    selectImageButton.setOnClickListener(this);
   }
 
   /**
@@ -155,7 +161,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
       case R.id.emailViaButton:
         sendEmail(getActivity(), emailAddress, getString(R.string.tweet_report_title), tweet.getTweetReport());
         break;
-      case R.id.selectImageFB:
+      case R.id.selectImageButton:
         toastMessage(getActivity(), "select image button pressed");
         checkExternalStorageReadPermission();
         break;
@@ -219,6 +225,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
       try {
         Uri selectedImage = data.getData();
         imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
+        tweetImage.setImageURI(selectedImage);
         toastMessage(getActivity(), getRealPathFromURI_API19(getActivity(), selectedImage));
       } catch (Exception e) {
         info(e.toString());
