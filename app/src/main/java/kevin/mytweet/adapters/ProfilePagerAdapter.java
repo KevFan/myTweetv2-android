@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import kevin.mytweet.fragments.AddTweetFragment;
+import kevin.mytweet.fragments.FollowFragment;
 import kevin.mytweet.fragments.TimeLineFragment;
 
 /**
@@ -23,7 +24,7 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
       case 0:
         return new TimeLineFragment();
       case 1:
-        return new AddTweetFragment();
+        return new FollowFragment();
       case 2:
         return new TimeLineFragment();
     }
