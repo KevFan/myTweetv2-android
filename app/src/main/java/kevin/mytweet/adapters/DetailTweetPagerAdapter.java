@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 
-import kevin.mytweet.fragments.DetailTweetFragment;
+import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.models.Tweet;
 
 /**

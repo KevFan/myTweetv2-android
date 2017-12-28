@@ -1,26 +1,22 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.timeline;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.List;
 
 import kevin.mytweet.R;
-import kevin.mytweet.activities.DetailTweetPagerActivity;
 import kevin.mytweet.activities.Welcome;
-import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
 import retrofit2.Call;
 import retrofit2.Callback;

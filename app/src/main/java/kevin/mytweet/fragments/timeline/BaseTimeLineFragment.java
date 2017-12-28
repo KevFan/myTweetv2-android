@@ -1,6 +1,5 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.timeline;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,12 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -24,6 +19,7 @@ import kevin.mytweet.activities.AddTweetActivity;
 import kevin.mytweet.activities.DetailTweetPagerActivity;
 import kevin.mytweet.adapters.TimeLineAdapter;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
 

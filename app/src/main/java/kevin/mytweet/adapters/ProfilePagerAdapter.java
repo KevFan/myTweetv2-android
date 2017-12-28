@@ -5,9 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import kevin.mytweet.fragments.AddTweetFragment;
 import kevin.mytweet.fragments.FollowFragment;
-import kevin.mytweet.fragments.TimeLineFragment;
+import kevin.mytweet.fragments.timeline.TimeLineFragment;
 
 /**
  * https://stackoverflow.com/questions/42311123/how-to-add-tabbed-activity-into-navigation-drawer-activity

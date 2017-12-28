@@ -1,23 +1,18 @@
 package kevin.mytweet.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.adapters.DetailTweetPagerAdapter;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.fragments.DetailTweetFragment;
+import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.models.Tweet;
 
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.MenuItem;
 
-import static kevin.mytweet.helpers.IntentHelper.navigateUp;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**

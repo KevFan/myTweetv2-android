@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
 
 import kevin.mytweet.R;
-import kevin.mytweet.fragments.AddTweetFragment;
+import kevin.mytweet.fragments.tweet.AddTweetFragment;
 
 import static kevin.mytweet.helpers.IntentHelper.navigateUp;
 import static kevin.mytweet.helpers.MessageHelpers.dialogBox;
