@@ -1,20 +1,11 @@
 package kevin.mytweet.fragments;
 
-import android.support.v4.app.Fragment;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,17 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
-import kevin.mytweet.activities.Welcome;
-import kevin.mytweet.adapters.ListFollowersAdapter;
+import kevin.mytweet.adapters.ListFollowsAdapter;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Follow;
-import kevin.mytweet.models.Tweet;
-import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static kevin.mytweet.helpers.MessageHelpers.dialogBox;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
@@ -42,12 +29,16 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
  */
 
 public class FollowFragment extends Fragment {
+  public static final String EXTRA_FOLLOW = "FOLLOW_OR_FOLLOWING";
+
   public TextView noFollowsMessage;
   public ListView listView;
-  public List<Follow> followers = new ArrayList<>();
+  public List<Follow> follows = new ArrayList<>();
   public MyTweetApp app = MyTweetApp.getApp();
-  public ListFollowersAdapter adapter;
+  public ListFollowsAdapter adapter;
   public SwipeRefreshLayout mSwipeRefreshLayout;
+
+  private String followOrFollowing;
 
   /**
    * Called when fragment is first created
@@ -58,7 +49,8 @@ public class FollowFragment extends Fragment {
   public void onCreate(Bundle savedInstanceState) {
     info("FollowFragment created");
     super.onCreate(savedInstanceState);
-    adapter = new ListFollowersAdapter(getActivity(), followers);
+    followOrFollowing = (String) getArguments().getSerializable(EXTRA_FOLLOW);
+    adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
   }
 
   /**
@@ -94,7 +86,7 @@ public class FollowFragment extends Fragment {
   }
 
   public void setNoTweetMessage() {
-    if (!adapter.followers.isEmpty()) {
+    if (!adapter.follows.isEmpty()) {
       noFollowsMessage.setVisibility(View.INVISIBLE);
     } else {
       noFollowsMessage.setVisibility(View.VISIBLE);
@@ -102,28 +94,33 @@ public class FollowFragment extends Fragment {
   }
 
   public void updateFollowList() {
-    Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowers(app.currentUser._id);
-    call.enqueue(new GetFollowers());
+    if (followOrFollowing.equals("follower")) {
+      Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowers(app.currentUser._id);
+      call.enqueue(new GetFollows());
+    } else {
+      Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowings(app.currentUser._id);
+      call.enqueue(new GetFollows());
+    }
   }
 
-  public class GetFollowers implements Callback<List<Follow>> {
+  public class GetFollows implements Callback<List<Follow>> {
     @Override
     public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
-      followers = response.body();
+      follows = response.body();
       if (mSwipeRefreshLayout != null)
         mSwipeRefreshLayout.setRefreshing(false);
-      adapter = new ListFollowersAdapter(getActivity(), followers);
+      adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
       setNoTweetMessage();
-      toastMessage(getActivity(), "Got all Followers!!");
+      toastMessage(getActivity(), "Got all " + followOrFollowing + "!!");
     }
 
     @Override
     public void onFailure(Call<List<Follow>> call, Throwable t) {
       info(t.toString());
       mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed to get all followers :(");
+      toastMessage(getActivity(), "Failed to get all " + followOrFollowing +" :(");
     }
   }
 }

@@ -61,4 +61,7 @@ public interface MyTweetService {
 
   @GET("/api/follow/followers/{id}")
   Call<List<Follow>> getFollowers(@Path("id") String id);
+
+  @GET("/api/follow/following/{id}")
+  Call<List<Follow>> getFollowings(@Path("id") String id);
 }

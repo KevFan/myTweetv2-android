@@ -20,20 +20,22 @@ import kevin.mytweet.models.User;
 /**
  * Custom adaptor for the timeline fragment to list tweets
  */
-public class ListFollowersAdapter extends ArrayAdapter<Follow> {
+public class ListFollowsAdapter extends ArrayAdapter<Follow> {
   private Context context;
-  public List<Follow> followers;
+  public List<Follow> follows;
+  private String followOrFollowing;
 
   /**
    * TimeLineAdapter constructor
    *
    * @param context   Context of where the adapter is constructed
-   * @param followers ArrayList of users
+   * @param follows ArrayList of users
    */
-  public ListFollowersAdapter(Context context, List<Follow> followers) {
-    super(context, 0, followers);
+  public ListFollowsAdapter(Context context, List<Follow> follows, String followOrFollowing) {
+    super(context, 0, follows);
+    this.followOrFollowing = followOrFollowing;
     this.context = context;
-    this.followers = followers;
+    this.follows = follows;
   }
 
   /**
@@ -51,23 +53,31 @@ public class ListFollowersAdapter extends ArrayAdapter<Follow> {
       convertView = inflater.inflate(R.layout.list_item_user, null);
     }
 
-    Follow follow = followers.get(position);
+    Follow follow = follows.get(position);
 
-    TextView userName = (TextView) convertView.findViewById(R.id.list_user_UserName);
-    userName.setText(follow.follower.firstName + " " + follow.follower.lastName);
-
-    ImageView userImage = (ImageView) convertView.findViewById(R.id.list_user_userImage);
-    if (!follow.follower.image.equals("")) {
-      Picasso.with(context).load(follow.follower.image).into(userImage);
+    // Set details based of whether list is a follower or following list
+    if (followOrFollowing.equals("follower")) {
+      setDetails(convertView, follow.follower);
     } else {
-      userImage.setImageResource(R.mipmap.ic_launcher_round);
+      setDetails(convertView, follow.following);
     }
 
     return convertView;
   }
 
+  private void setDetails(View convertView, User user) {
+    TextView userName = (TextView) convertView.findViewById(R.id.list_user_UserName);
+    ImageView userImage = (ImageView) convertView.findViewById(R.id.list_user_userImage);
+    userName.setText(user.firstName + " " + user.lastName);
+    if (!user.image.equals("")) {
+      Picasso.with(context).load(user.image).into(userImage);
+    } else {
+      userImage.setImageResource(R.mipmap.ic_launcher_round);
+    }
+  }
+
   @Override
   public int getCount() {
-    return followers.size();
+    return follows.size();
   }
 }

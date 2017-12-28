@@ -1,5 +1,6 @@
 package kevin.mytweet.adapters;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,13 +21,21 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
 
   @Override
   public Fragment getItem(int position) {
+    Bundle args = new Bundle();
+    Fragment fragment;
     switch (position){
       case 0:
         return new TimeLineFragment();
       case 1:
-        return new FollowFragment();
+        args.putSerializable(FollowFragment.EXTRA_FOLLOW, "follower");
+        fragment = new FollowFragment();
+        fragment.setArguments(args);
+        return fragment;
       case 2:
-        return new TimeLineFragment();
+        args.putSerializable(FollowFragment.EXTRA_FOLLOW, "following");
+        fragment = new FollowFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
     return null;
   }
