@@ -32,10 +32,11 @@
             android:id="@+id/loginEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawablePadding="15dp"
+            android:drawableStart="@drawable/ic_email_black_24dp"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:drawableStart="@drawable/ic_email_black_24dp"
-            android:drawablePadding="15dp"/>
+            android:text="homer@simpson.com"/>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -54,10 +55,11 @@
             android:id="@+id/loginPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawablePadding="15dp"
+            android:drawableStart="@drawable/ic_lock_black_24dp"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:drawableStart="@drawable/ic_lock_black_24dp"
-            android:drawablePadding="15dp"/>
+            android:text="secret"/>
     </android.support.design.widget.TextInputLayout>
 
     <Button

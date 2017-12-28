@@ -121,4 +121,18 @@ public class DetailTweetPagerActivity extends BaseActivity {
       return super.onOptionsItemSelected(item);
     }
   }
+
+  /**
+   * Called after asking for permissions
+   * https://developer.android.com/training/permissions/requesting.html
+   *
+   * @param requestCode  Request code passed in by requestPermissions
+   * @param permissions  requested permissions
+   * @param grantResults result of granting permissions
+   */
+  @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                         int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }
 }
