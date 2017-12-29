@@ -205,7 +205,7 @@ public class HomeActivity extends AppCompatActivity
           @Override
           public void onResponse(Call<User> call, Response<User> response) {
             currentUser = response.body();
-            Picasso.with(HomeActivity.this).load(currentUser.image).into(profilePhoto);
+            Picasso.with(HomeActivity.this).load(response.body().image).into(profilePhoto);
             toastMessage(HomeActivity.this, "Profile photo updated");
           }
 
