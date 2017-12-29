@@ -26,22 +26,13 @@ public class GlobalTimeLineFragment extends BaseTimeLineFragment {
 
   @Override
   public void updateTimeLine() {
-    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllTweets();
-    call.enqueue(new Callback<List<Tweet>>() {
-      @Override
-      public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
-        if (mSwipeRefreshLayout != null)
-          mSwipeRefreshLayout.setRefreshing(false);
-        updateTimeLineData(response.body());
-        toastMessage(getActivity(), "Successfully got all tweets");
-      }
-
-      @Override
-      public void onFailure(Call<List<Tweet>> call, Throwable t) {
-        app.tweetServiceAvailable = false;
-        mSwipeRefreshLayout.setRefreshing(false);
-        toastMessage(getActivity(), "Failed getting all user tweets :(");
-      }
-    });
+    String userId = (String) getArguments().getSerializable("userid");
+    if (userId.equals(app.currentUser._id)) {
+      Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllTweets();
+      call.enqueue(new GetAllUserTweets());
+    } else {
+      Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(userId);
+      call.enqueue(new GetAllUserTweets());
+    }
   }
 }

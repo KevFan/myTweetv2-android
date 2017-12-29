@@ -17,10 +17,11 @@ import kevin.mytweet.adapters.ProfilePagerAdapter;
 
 public class ProfileFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    String userId = (String) getArguments().getSerializable("userid");
     View view = inflater.inflate(R.layout.fragment_profile, container, false);
     TabLayout tabLayout = (TabLayout)view.findViewById(R.id.tabs);
     ViewPager viewPager = (ViewPager)view.findViewById(R.id.view_pager);
-    viewPager.setAdapter(new ProfilePagerAdapter(getChildFragmentManager()));
+    viewPager.setAdapter(new ProfilePagerAdapter(getChildFragmentManager(), userId));
     tabLayout.setupWithViewPager(viewPager);
     return view;
   }

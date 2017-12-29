@@ -116,6 +116,7 @@ public class HomeActivity extends AppCompatActivity
 //     Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
     Fragment fragment = new ProfileFragment();
+    setUserIdToFragment(fragment, currentUser._id);
     manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
   }
 
@@ -160,10 +161,12 @@ public class HomeActivity extends AppCompatActivity
 
     if (id == R.id.nav_home) {
       Fragment fragment = new ProfileFragment();
+      setUserIdToFragment(fragment, currentUser._id);
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav Home Selected");
     } else if (id == R.id.nav_global_timeline) {
       Fragment fragment = new GlobalTimeLineFragment();
+      setUserIdToFragment(fragment, currentUser._id);
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
       toastMessage(this, "Nav TimeLine Selected");
     } else if (id == R.id.nav_preferences) {
@@ -257,5 +260,11 @@ public class HomeActivity extends AppCompatActivity
     intent.setType("image/*");
     intent.setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+  }
+
+  public static void setUserIdToFragment(Fragment fragment, String userId) {
+    Bundle args = new Bundle();
+    args.putSerializable("userid", userId);
+    fragment.setArguments(args);
   }
 }

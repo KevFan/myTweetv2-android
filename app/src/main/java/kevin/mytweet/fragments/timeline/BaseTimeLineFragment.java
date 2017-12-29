@@ -22,8 +22,12 @@ import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
+import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
  * Created by kevin on 24/11/2017.
@@ -124,4 +128,22 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
    * Should make relevant retrofit call, and call updateTimeLineData with the response body here
    */
   public abstract void updateTimeLine();
+
+  // Class to get all user tweets and update app timeline and adapter timeline
+  public class GetAllUserTweets implements Callback<List<Tweet>> {
+    @Override
+    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      if (mSwipeRefreshLayout != null)
+        mSwipeRefreshLayout.setRefreshing(false);
+      updateTimeLineData(response.body());
+      toastMessage(getActivity(), "Successfully got all user tweets");
+    }
+
+    @Override
+    public void onFailure(Call<List<Tweet>> call, Throwable t) {
+      app.tweetServiceAvailable = false;
+      mSwipeRefreshLayout.setRefreshing(false);
+      toastMessage(getActivity(), "Failed getting all user tweets :(");
+    }
+  }
 }

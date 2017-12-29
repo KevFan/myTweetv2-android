@@ -5,8 +5,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.fragments.FollowFragment;
+import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.timeline.TimeLineFragment;
+
+import static kevin.mytweet.activities.HomeActivity.setUserIdToFragment;
+import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**
  * https://stackoverflow.com/questions/42311123/how-to-add-tabbed-activity-into-navigation-drawer-activity
@@ -14,8 +19,10 @@ import kevin.mytweet.fragments.timeline.TimeLineFragment;
  */
 
 public class ProfilePagerAdapter extends FragmentPagerAdapter {
-  public ProfilePagerAdapter(FragmentManager fm) {
+  private String userId;
+  public ProfilePagerAdapter(FragmentManager fm, String userId) {
     super(fm);
+    this.userId = userId;
   }
 
   @Override
@@ -24,14 +31,22 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
     Fragment fragment;
     switch (position){
       case 0:
-        return new TimeLineFragment();
+        if (userId.equals(MyTweetApp.getApp().currentUser._id)) {
+          fragment = new TimeLineFragment();
+        } else {
+          fragment = new GlobalTimeLineFragment();
+        }
+        setUserIdToFragment(fragment, userId);
+        return fragment;
       case 1:
-        args.putSerializable(FollowFragment.EXTRA_FOLLOW, "follower");
+        args.putString(FollowFragment.EXTRA_FOLLOW, "follower");
+        args.putString("userid", userId);
         fragment = new FollowFragment();
         fragment.setArguments(args);
         return fragment;
       case 2:
-        args.putSerializable(FollowFragment.EXTRA_FOLLOW, "following");
+        args.putString(FollowFragment.EXTRA_FOLLOW, "following");
+        args.putString("userid", userId);
         fragment = new FollowFragment();
         fragment.setArguments(args);
         return fragment;

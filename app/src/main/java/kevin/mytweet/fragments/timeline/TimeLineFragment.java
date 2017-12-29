@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -259,24 +260,5 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
     editor.putString("email", "");
     editor.putString("password", "");
     editor.apply();
-  }
-
-
-  // Class to get all user tweets and update app timeline and adapter timeline
-  public class GetAllUserTweets implements Callback<List<Tweet>> {
-    @Override
-    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
-      if (mSwipeRefreshLayout != null)
-        mSwipeRefreshLayout.setRefreshing(false);
-      updateTimeLineData(response.body());
-      toastMessage(getActivity(), "Successfully got all user tweets");
-    }
-
-    @Override
-    public void onFailure(Call<List<Tweet>> call, Throwable t) {
-      app.tweetServiceAvailable = false;
-      mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed getting all user tweets :(");
-    }
   }
 }
