@@ -68,4 +68,7 @@ public interface MyTweetService {
   @Multipart
   @POST("/api/follow")
   Call<Follow> follow(@Part("following") RequestBody following);
+
+  @DELETE("/api/follow/{id}")
+  Call<Follow> unfollow(@Path("id") String id);
 }

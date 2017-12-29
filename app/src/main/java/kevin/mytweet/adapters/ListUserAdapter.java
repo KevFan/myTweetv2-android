@@ -93,7 +93,19 @@ public class ListUserAdapter extends ArrayAdapter<User> {
             }
           });
         } else {
-          info("unfollowed");
+          Call<Follow> call = (Call<Follow>) app.tweetService.unfollow(user._id);
+          call.enqueue(new Callback<Follow>() {
+            @Override
+            public void onResponse(Call<Follow> call, Response<Follow> response) {
+              info("unfollowed " + user.firstName);
+            }
+
+            @Override
+            public void onFailure(Call<Follow> call, Throwable t) {
+              info(t.toString());
+              info("failed to unfollow " + user.firstName);
+            }
+          });
         }
       }
     });
