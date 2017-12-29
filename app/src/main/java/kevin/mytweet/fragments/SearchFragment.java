@@ -74,6 +74,8 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         updateUserList();
       }
     });
+    setHasOptionsMenu(true);
+
     return view;
   }
 

@@ -44,7 +44,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   public void onCreate(Bundle savedInstanceState) {
     info("TweetLineFragement created");
     super.onCreate(savedInstanceState);
-    setHasOptionsMenu(true);
   }
 
   /**

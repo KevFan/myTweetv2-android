@@ -89,6 +89,7 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
         startActivity(new Intent(view.getContext(), AddTweetActivity.class));
       }
     });
+    setHasOptionsMenu(true);
 
     return view;
   }
