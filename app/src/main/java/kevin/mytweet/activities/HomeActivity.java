@@ -1,16 +1,11 @@
 package kevin.mytweet.activities;
 
 import android.Manifest;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -22,7 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,12 +25,16 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.fragments.GlobalTimeLineFragment;
-import kevin.mytweet.fragments.TimeLineFragment;
+import kevin.mytweet.fragments.FollowFragment;
+import kevin.mytweet.fragments.SearchFragment;
+import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
+import kevin.mytweet.fragments.ProfileFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
+import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -118,10 +116,25 @@ public class HomeActivity extends AppCompatActivity
     if (!currentUser.image.equals("")) {
       Picasso.with(this).load(currentUser.image).into(profilePhoto);
     }
+    Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowings(app.currentUser._id);
+    call.enqueue(new Callback<List<Follow>>() {
+      @Override
+      public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
+        app.followings = response.body();
+        info("Home Activity: Got Followings");
+      }
 
-    // Set home view to timeline fragment
+      @Override
+      public void onFailure(Call<List<Follow>> call, Throwable t) {
+        info(t.toString());
+        info("Home Activity: Failed to get Followings");
+      }
+    });
+
+//     Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
-    Fragment fragment = new TimeLineFragment();
+    Fragment fragment = new ProfileFragment();
+    setUserIdToFragment(fragment, currentUser._id);
     manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
   }
 
@@ -165,19 +178,29 @@ public class HomeActivity extends AppCompatActivity
     FragmentManager manager = getSupportFragmentManager();
 
     if (id == R.id.nav_home) {
-      Fragment fragment = new TimeLineFragment();
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      Fragment fragment = new ProfileFragment();
+      setUserIdToFragment(fragment, currentUser._id);
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
       toastMessage(this, "Nav Home Selected");
     } else if (id == R.id.nav_global_timeline) {
       Fragment fragment = new GlobalTimeLineFragment();
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      setUserIdToFragment(fragment, currentUser._id);
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
       toastMessage(this, "Nav TimeLine Selected");
     } else if (id == R.id.nav_preferences) {
       toastMessage(this, "Nav Settings Selected");
       startActivity(new Intent(this, PreferenceActivity.class));
     } else if (id == R.id.nav_settings) {
       Fragment fragment = new UpdateAccountFragment();
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
+    } else if (id == R.id.nav_search) {
+      Fragment fragment = new SearchFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
+    } else if (id == R.id.nav_signout) {
+      //        clearPreferenceSettings();
+      startActivity(new Intent(this, Welcome.class)
+          .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+      toastMessage(this, "Signing out");
     }
 
     drawer.closeDrawer(GravityCompat.START);
@@ -204,7 +227,7 @@ public class HomeActivity extends AppCompatActivity
           @Override
           public void onResponse(Call<User> call, Response<User> response) {
             currentUser = response.body();
-            Picasso.with(HomeActivity.this).load(currentUser.image).into(profilePhoto);
+            Picasso.with(HomeActivity.this).load(response.body().image).into(profilePhoto);
             toastMessage(HomeActivity.this, "Profile photo updated");
           }
 
@@ -263,5 +286,11 @@ public class HomeActivity extends AppCompatActivity
     intent.setType("image/*");
     intent.setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+  }
+
+  public static void setUserIdToFragment(Fragment fragment, String userId) {
+    Bundle args = new Bundle();
+    args.putSerializable("userid", userId);
+    fragment.setArguments(args);
   }
 }

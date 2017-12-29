@@ -1,26 +1,23 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.timeline;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.List;
 
 import kevin.mytweet.R;
-import kevin.mytweet.activities.DetailTweetPagerActivity;
 import kevin.mytweet.activities.Welcome;
-import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +44,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   public void onCreate(Bundle savedInstanceState) {
     info("TweetLineFragement created");
     super.onCreate(savedInstanceState);
-    setHasOptionsMenu(true);
   }
 
   /**
@@ -82,7 +78,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
           toastMessage(getActivity(), "Have no tweets to delete!!");
         } else {
           // Dialog box to confirm delete tweets
-          dialogBox(getActivity(), "Delete all tweets", "Are you sure you want to delete all tweets in timeline?",
+          dialogBox(getActivity(), "Delete all tweets", "Are you sure you want to delete your tweets in timeline?",
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
@@ -109,12 +105,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
       // Clear entire activity history when logging out so that user can use back button to return
       // to old activities if a different user sign's in
       // https://stackoverflow.com/questions/3473168/clear-the-entire-history-stack-and-start-a-new-activity-on-android
-      case R.id.menuLogout:
-        clearPreferenceSettings();
-        startActivity(new Intent(getActivity(), Welcome.class)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        toastMessage(getActivity(), "Signing out");
-        break;
       default:
         info("Time Line Fragment - Something is wrong :(");
         break;
@@ -253,34 +243,15 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   /**
    * Clears the shared preference setiings of the current user details - used in user log out
    */
-  public void clearPreferenceSettings() {
-    // Sets shared preference values to current user
-    info("TimeLineFragment - Clearing shared preferences due to sign out");
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    SharedPreferences.Editor editor = prefs.edit();
-    editor.putString("firstName", "");
-    editor.putString("lastName", "");
-    editor.putString("email", "");
-    editor.putString("password", "");
-    editor.apply();
-  }
-
-
-  // Class to get all user tweets and update app timeline and adapter timeline
-  public class GetAllUserTweets implements Callback<List<Tweet>> {
-    @Override
-    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
-      if (mSwipeRefreshLayout != null)
-        mSwipeRefreshLayout.setRefreshing(false);
-      updateTimeLineData(response.body());
-      toastMessage(getActivity(), "Successfully got all user tweets");
-    }
-
-    @Override
-    public void onFailure(Call<List<Tweet>> call, Throwable t) {
-      app.tweetServiceAvailable = false;
-      mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed getting all user tweets :(");
-    }
-  }
+//  public void clearPreferenceSettings() {
+//    // Sets shared preference values to current user
+//    info("TimeLineFragment - Clearing shared preferences due to sign out");
+//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//    SharedPreferences.Editor editor = prefs.edit();
+//    editor.putString("firstName", "");
+//    editor.putString("lastName", "");
+//    editor.putString("email", "");
+//    editor.putString("password", "");
+//    editor.apply();
+//  }
 }
