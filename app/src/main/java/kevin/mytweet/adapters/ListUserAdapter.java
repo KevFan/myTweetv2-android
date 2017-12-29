@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -13,8 +15,12 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import kevin.mytweet.R;
+import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
+
+import static kevin.mytweet.helpers.MessageHelpers.info;
+import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
  * Custom adaptor for the timeline fragment to list tweets
@@ -51,7 +57,25 @@ public class ListUserAdapter extends ArrayAdapter<User> {
     }
 
     User user = users.get(position);
-
+    final Context context = getContext();
+    Switch followSwitch = (Switch) convertView.findViewById(R.id.list_user_followSwitch);
+    // Set switch state by comparing to following list
+    for (Follow follow : MyTweetApp.getApp().followings) {
+      if (follow.following._id.equals(user._id)) {
+        followSwitch.setChecked(true);
+        break;
+      }
+    }
+    followSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+          info("followed");
+        } else {
+          info("unfollowed");
+        }
+      }
+    });
     TextView userName = (TextView) convertView.findViewById(R.id.list_user_UserName);
     ImageView userImage = (ImageView) convertView.findViewById(R.id.list_user_userImage);
     userName.setText(user.firstName + " " + user.lastName);

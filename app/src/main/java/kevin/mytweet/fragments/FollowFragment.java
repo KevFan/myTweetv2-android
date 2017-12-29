@@ -126,6 +126,11 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     @Override
     public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
       follows = response.body();
+      if (followOrFollowing.equals("follower")) {
+        app.followers = response.body();
+      } else {
+        app.followings = response.body();
+      }
       if (mSwipeRefreshLayout != null)
         mSwipeRefreshLayout.setRefreshing(false);
       adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
