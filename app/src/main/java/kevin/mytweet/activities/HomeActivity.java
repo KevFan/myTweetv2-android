@@ -28,6 +28,7 @@ import java.io.File;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.fragments.SearchFragment;
 import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.ProfileFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
@@ -174,6 +175,9 @@ public class HomeActivity extends AppCompatActivity
       startActivity(new Intent(this, PreferenceActivity.class));
     } else if (id == R.id.nav_settings) {
       Fragment fragment = new UpdateAccountFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+    } else if (id == R.id.nav_search) {
+      Fragment fragment = new SearchFragment();
       manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
     }
 
