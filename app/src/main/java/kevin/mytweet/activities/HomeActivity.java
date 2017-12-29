@@ -25,13 +25,16 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.fragments.FollowFragment;
 import kevin.mytweet.fragments.SearchFragment;
 import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
 import kevin.mytweet.fragments.ProfileFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
+import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -113,6 +116,20 @@ public class HomeActivity extends AppCompatActivity
     if (!currentUser.image.equals("")) {
       Picasso.with(this).load(currentUser.image).into(profilePhoto);
     }
+    Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowings(app.currentUser._id);
+    call.enqueue(new Callback<List<Follow>>() {
+      @Override
+      public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
+        app.followings = response.body();
+        info("Home Activity: Got Followings");
+      }
+
+      @Override
+      public void onFailure(Call<List<Follow>> call, Throwable t) {
+        info(t.toString());
+        info("Home Activity: Failed to get Followings");
+      }
+    });
 
 //     Set home view to timeline fragment
     FragmentManager manager = getSupportFragmentManager();
@@ -163,22 +180,22 @@ public class HomeActivity extends AppCompatActivity
     if (id == R.id.nav_home) {
       Fragment fragment = new ProfileFragment();
       setUserIdToFragment(fragment, currentUser._id);
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
       toastMessage(this, "Nav Home Selected");
     } else if (id == R.id.nav_global_timeline) {
       Fragment fragment = new GlobalTimeLineFragment();
       setUserIdToFragment(fragment, currentUser._id);
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
       toastMessage(this, "Nav TimeLine Selected");
     } else if (id == R.id.nav_preferences) {
       toastMessage(this, "Nav Settings Selected");
       startActivity(new Intent(this, PreferenceActivity.class));
     } else if (id == R.id.nav_settings) {
       Fragment fragment = new UpdateAccountFragment();
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
     } else if (id == R.id.nav_search) {
       Fragment fragment = new SearchFragment();
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
     }
 
     drawer.closeDrawer(GravityCompat.START);
