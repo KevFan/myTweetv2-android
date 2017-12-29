@@ -16,6 +16,7 @@ import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.listeners.FollowUnfollowListener;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 import okhttp3.MediaType;
@@ -26,6 +27,7 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.UserAdapterHelper.setDetails;
 
 /**
  * Custom adaptor for the timeline fragment to list tweets
@@ -62,61 +64,8 @@ public class ListUserAdapter extends ArrayAdapter<User> {
       convertView = inflater.inflate(R.layout.list_item_user, null);
     }
 
-    final User user = users.get(position);
-    final Context context = getContext();
-    Switch followSwitch = (Switch) convertView.findViewById(R.id.list_user_followSwitch);
-    // Set switch state by comparing to following list
-    for (Follow follow : MyTweetApp.getApp().followings) {
-      if (follow.following._id.equals(user._id)) {
-        followSwitch.setChecked(true);
-        break;
-      }
-    }
-    followSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-          RequestBody following =
-              RequestBody.create(
-                  MediaType.parse("multipart/form-data"), user._id);
-          Call<Follow> call = (Call<Follow>) app.tweetService.follow(following);
-          call.enqueue(new Callback<Follow>() {
-            @Override
-            public void onResponse(Call<Follow> call, Response<Follow> response) {
-              info("Following " + user.firstName);
-            }
-
-            @Override
-            public void onFailure(Call<Follow> call, Throwable t) {
-              info(t.toString());
-              info("failed to follow");
-            }
-          });
-        } else {
-          Call<Follow> call = (Call<Follow>) app.tweetService.unfollow(user._id);
-          call.enqueue(new Callback<Follow>() {
-            @Override
-            public void onResponse(Call<Follow> call, Response<Follow> response) {
-              info("unfollowed " + user.firstName);
-            }
-
-            @Override
-            public void onFailure(Call<Follow> call, Throwable t) {
-              info(t.toString());
-              info("failed to unfollow " + user.firstName);
-            }
-          });
-        }
-      }
-    });
-    TextView userName = (TextView) convertView.findViewById(R.id.list_user_UserName);
-    ImageView userImage = (ImageView) convertView.findViewById(R.id.list_user_userImage);
-    userName.setText(user.firstName + " " + user.lastName);
-    if (!user.image.equals("")) {
-      Picasso.with(context).load(user.image).into(userImage);
-    } else {
-      userImage.setImageResource(R.mipmap.ic_launcher_round);
-    }
+    User user = users.get(position);
+    setDetails(context, convertView, user);
 
     return convertView;
   }

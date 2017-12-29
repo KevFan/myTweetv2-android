@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -13,9 +15,19 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import kevin.mytweet.R;
+import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.listeners.FollowUnfollowListener;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static kevin.mytweet.helpers.MessageHelpers.info;
+import static kevin.mytweet.helpers.UserAdapterHelper.setDetails;
 
 /**
  * Custom adaptor for the timeline fragment to list tweets
@@ -24,11 +36,12 @@ public class ListFollowsAdapter extends ArrayAdapter<Follow> {
   private Context context;
   public List<Follow> follows;
   private String followOrFollowing;
+  private MyTweetApp app = MyTweetApp.getApp();
 
   /**
    * TimeLineAdapter constructor
    *
-   * @param context   Context of where the adapter is constructed
+   * @param context Context of where the adapter is constructed
    * @param follows ArrayList of users
    */
   public ListFollowsAdapter(Context context, List<Follow> follows, String followOrFollowing) {
@@ -57,23 +70,12 @@ public class ListFollowsAdapter extends ArrayAdapter<Follow> {
 
     // Set details based of whether list is a follower or following list
     if (followOrFollowing.equals("follower")) {
-      setDetails(convertView, follow.follower);
+      setDetails(context, convertView, follow.follower);
     } else {
-      setDetails(convertView, follow.following);
+      setDetails(context, convertView, follow.following);
     }
 
     return convertView;
-  }
-
-  private void setDetails(View convertView, User user) {
-    TextView userName = (TextView) convertView.findViewById(R.id.list_user_UserName);
-    ImageView userImage = (ImageView) convertView.findViewById(R.id.list_user_userImage);
-    userName.setText(user.firstName + " " + user.lastName);
-    if (!user.image.equals("")) {
-      Picasso.with(context).load(user.image).into(userImage);
-    } else {
-      userImage.setImageResource(R.mipmap.ic_launcher_round);
-    }
   }
 
   @Override
