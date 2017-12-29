@@ -106,12 +106,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
       // Clear entire activity history when logging out so that user can use back button to return
       // to old activities if a different user sign's in
       // https://stackoverflow.com/questions/3473168/clear-the-entire-history-stack-and-start-a-new-activity-on-android
-      case R.id.menuLogout:
-//        clearPreferenceSettings();
-        startActivity(new Intent(getActivity(), Welcome.class)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        toastMessage(getActivity(), "Signing out");
-        break;
       default:
         info("Time Line Fragment - Something is wrong :(");
         break;

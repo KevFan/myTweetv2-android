@@ -196,6 +196,11 @@ public class HomeActivity extends AppCompatActivity
     } else if (id == R.id.nav_search) {
       Fragment fragment = new SearchFragment();
       manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
+    } else if (id == R.id.nav_signout) {
+      //        clearPreferenceSettings();
+      startActivity(new Intent(this, Welcome.class)
+          .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+      toastMessage(this, "Signing out");
     }
 
     drawer.closeDrawer(GravityCompat.START);
