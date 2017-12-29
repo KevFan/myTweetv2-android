@@ -38,7 +38,6 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
  */
 
 public class SearchFragment extends Fragment implements AdapterView.OnItemClickListener, TextWatcher {
-  public TextView noneMessage;
   public ListView listView;
   public EditText search;
   public List<User> users = new ArrayList<>();
@@ -70,7 +69,6 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
   public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
     super.onCreateView(inflater, parent, savedInstanceState);
     View view = inflater.inflate(R.layout.fragment_search, parent, false);
-    noneMessage = (TextView) view.findViewById(R.id.noUserMessage);
     search = (EditText) view.findViewById(R.id.searchUser);
     search.addTextChangedListener(this);
     listView = (ListView) view.findViewById(R.id.userList);
@@ -91,15 +89,6 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
   public void onResume() {
     super.onResume();
     updateUserList();
-  }
-
-  public void setNoTweetMessage() {
-    if (!adapter.users.isEmpty()) {
-      noneMessage.setVisibility(View.INVISIBLE);
-    } else {
-      noneMessage.setText("There are no users yet :(");
-      noneMessage.setVisibility(View.VISIBLE);
-    }
   }
 
   public void updateUserList() {
@@ -140,7 +129,6 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
       filter = new UserFilter(users, adapter);
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
-      setNoTweetMessage();
       toastMessage(getActivity(), "Got all users !!");
     }
 

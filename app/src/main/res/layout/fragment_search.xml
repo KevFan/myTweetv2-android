@@ -31,15 +31,6 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:id="@+id/noUserMessage"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="16dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/noFollowMessage"/>
-
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/tweet_swipe_refresh_layout"
             android:layout_width="match_parent"
