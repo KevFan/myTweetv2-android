@@ -18,6 +18,11 @@ import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -28,6 +33,7 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 public class ListUserAdapter extends ArrayAdapter<User> {
   private Context context;
   public List<User> users;
+  public MyTweetApp app = MyTweetApp.getApp();
 
   /**
    * TimeLineAdapter constructor
@@ -56,7 +62,7 @@ public class ListUserAdapter extends ArrayAdapter<User> {
       convertView = inflater.inflate(R.layout.list_item_user, null);
     }
 
-    User user = users.get(position);
+    final User user = users.get(position);
     final Context context = getContext();
     Switch followSwitch = (Switch) convertView.findViewById(R.id.list_user_followSwitch);
     // Set switch state by comparing to following list
@@ -70,7 +76,22 @@ public class ListUserAdapter extends ArrayAdapter<User> {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-          info("followed");
+          RequestBody following =
+              RequestBody.create(
+                  MediaType.parse("multipart/form-data"), user._id);
+          Call<Follow> call = (Call<Follow>) app.tweetService.follow(following);
+          call.enqueue(new Callback<Follow>() {
+            @Override
+            public void onResponse(Call<Follow> call, Response<Follow> response) {
+              info("Following " + user.firstName);
+            }
+
+            @Override
+            public void onFailure(Call<Follow> call, Throwable t) {
+              info(t.toString());
+              info("failed to follow");
+            }
+          });
         } else {
           info("unfollowed");
         }
