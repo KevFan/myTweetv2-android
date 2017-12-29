@@ -39,6 +39,7 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
   protected ListView listView;
   protected TextView noTweetMessage;
   protected SwipeRefreshLayout mSwipeRefreshLayout;
+  protected FloatingActionButton newTweet;
 
   /**
    * Called when fragment is first created
@@ -81,7 +82,7 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
       }
     });
 
-    FloatingActionButton newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
+    newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
     newTweet.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
