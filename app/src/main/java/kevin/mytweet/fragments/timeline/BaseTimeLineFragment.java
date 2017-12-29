@@ -1,6 +1,5 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.timeline;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,12 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -24,10 +19,15 @@ import kevin.mytweet.activities.AddTweetActivity;
 import kevin.mytweet.activities.DetailTweetPagerActivity;
 import kevin.mytweet.adapters.TimeLineAdapter;
 import kevin.mytweet.app.MyTweetApp;
+import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.helpers.IntentHelper;
 import kevin.mytweet.models.Tweet;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
+import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
  * Created by kevin on 24/11/2017.
@@ -39,6 +39,7 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
   protected ListView listView;
   protected TextView noTweetMessage;
   protected SwipeRefreshLayout mSwipeRefreshLayout;
+  protected FloatingActionButton newTweet;
 
   /**
    * Called when fragment is first created
@@ -81,13 +82,14 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
       }
     });
 
-    FloatingActionButton newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
+    newTweet = (FloatingActionButton) view.findViewById(R.id.newTweetAction);
     newTweet.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         startActivity(new Intent(view.getContext(), AddTweetActivity.class));
       }
     });
+    setHasOptionsMenu(true);
 
     return view;
   }
@@ -128,4 +130,22 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
    * Should make relevant retrofit call, and call updateTimeLineData with the response body here
    */
   public abstract void updateTimeLine();
+
+  // Class to get all user tweets and update app timeline and adapter timeline
+  public class GetAllUserTweets implements Callback<List<Tweet>> {
+    @Override
+    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      if (mSwipeRefreshLayout != null)
+        mSwipeRefreshLayout.setRefreshing(false);
+      updateTimeLineData(response.body());
+      toastMessage(getActivity(), "Successfully got all user tweets");
+    }
+
+    @Override
+    public void onFailure(Call<List<Tweet>> call, Throwable t) {
+      app.tweetServiceAvailable = false;
+      mSwipeRefreshLayout.setRefreshing(false);
+      toastMessage(getActivity(), "Failed getting all user tweets :(");
+    }
+  }
 }

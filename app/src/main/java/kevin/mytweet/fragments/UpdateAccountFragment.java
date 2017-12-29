@@ -62,6 +62,8 @@ public class UpdateAccountFragment extends Fragment implements Callback<User> {
         call.enqueue(UpdateAccountFragment.this);
       }
     });
+    setHasOptionsMenu(true);
+
     return view;
   }
 

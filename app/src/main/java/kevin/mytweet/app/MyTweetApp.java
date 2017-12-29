@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.activities.HomeActivity;
+import kevin.mytweet.adapters.ListUserAdapter;
+import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.Token;
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
@@ -46,6 +48,8 @@ public class MyTweetApp extends Application implements Callback<Token> {
 //  public String          service_url  = "https://test-remote-myweet.herokuapp.com";   // Standard Emulator IP Address
 
   public List<User> users = new ArrayList<>();
+  public List<Follow> followers = new ArrayList<>();
+  public List<Follow> followings = new ArrayList<>();
   public List<Tweet> timeLine = new ArrayList<>();
   public User currentUser = null;
   protected static MyTweetApp app;

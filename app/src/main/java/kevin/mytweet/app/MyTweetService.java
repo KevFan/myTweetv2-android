@@ -3,6 +3,7 @@ package kevin.mytweet.app;
 import java.util.List;
 import java.util.stream.Stream;
 
+import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
 import okhttp3.MultipartBody;
@@ -47,7 +48,7 @@ public interface MyTweetService {
   @Multipart
   @POST("/api/tweets")
   Call<Tweet> createTweetWithPicture(@Part("tweetText") RequestBody tweetText,
-                          @Part("tweetDate") RequestBody tweetDate, @Part MultipartBody.Part image);
+                                     @Part("tweetDate") RequestBody tweetDate, @Part MultipartBody.Part image);
 
   @POST("/api/tweets")
   Call<Tweet> createTweet(@Body Tweet tweet);
@@ -57,4 +58,17 @@ public interface MyTweetService {
 
   @DELETE("/api/tweets/users/{userid}")
   Call<Tweet> deleteAllUserTweet(@Path("userid") String id);
+
+  @GET("/api/follow/followers/{id}")
+  Call<List<Follow>> getFollowers(@Path("id") String id);
+
+  @GET("/api/follow/following/{id}")
+  Call<List<Follow>> getFollowings(@Path("id") String id);
+
+  @Multipart
+  @POST("/api/follow")
+  Call<Follow> follow(@Part("following") RequestBody following);
+
+  @DELETE("/api/follow/{id}")
+  Call<Follow> unfollow(@Path("id") String id);
 }

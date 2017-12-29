@@ -1,4 +1,4 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.tweet;
 
 import android.Manifest;
 import android.app.Activity;
