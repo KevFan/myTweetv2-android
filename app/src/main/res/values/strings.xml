@@ -36,4 +36,5 @@
     <string name="updateAccount">Update Account</string>
     <string name="selectImage">Select Image</string>
     <string name="noFollowMessage">No follows yet :(</string>
+    <string name="title_map">Map</string>
 </resources>

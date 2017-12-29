@@ -27,6 +27,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.List;
 
+import kevin.mytweet.Map;
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.fragments.FollowFragment;
@@ -201,6 +202,8 @@ public class HomeActivity extends AppCompatActivity
       startActivity(new Intent(this, Welcome.class)
           .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
       toastMessage(this, "Signing out");
+    } else if (id == R.id.nav_map) {
+      startActivity(new Intent(this, Map.class));
     }
 
     drawer.closeDrawer(GravityCompat.START);
