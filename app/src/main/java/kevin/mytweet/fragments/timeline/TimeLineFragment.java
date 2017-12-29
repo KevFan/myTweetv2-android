@@ -79,7 +79,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
           toastMessage(getActivity(), "Have no tweets to delete!!");
         } else {
           // Dialog box to confirm delete tweets
-          dialogBox(getActivity(), "Delete all tweets", "Are you sure you want to delete all tweets in timeline?",
+          dialogBox(getActivity(), "Delete all tweets", "Are you sure you want to delete your tweets in timeline?",
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
@@ -107,7 +107,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
       // to old activities if a different user sign's in
       // https://stackoverflow.com/questions/3473168/clear-the-entire-history-stack-and-start-a-new-activity-on-android
       case R.id.menuLogout:
-        clearPreferenceSettings();
+//        clearPreferenceSettings();
         startActivity(new Intent(getActivity(), Welcome.class)
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         toastMessage(getActivity(), "Signing out");
@@ -250,15 +250,15 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   /**
    * Clears the shared preference setiings of the current user details - used in user log out
    */
-  public void clearPreferenceSettings() {
-    // Sets shared preference values to current user
-    info("TimeLineFragment - Clearing shared preferences due to sign out");
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    SharedPreferences.Editor editor = prefs.edit();
-    editor.putString("firstName", "");
-    editor.putString("lastName", "");
-    editor.putString("email", "");
-    editor.putString("password", "");
-    editor.apply();
-  }
+//  public void clearPreferenceSettings() {
+//    // Sets shared preference values to current user
+//    info("TimeLineFragment - Clearing shared preferences due to sign out");
+//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//    SharedPreferences.Editor editor = prefs.edit();
+//    editor.putString("firstName", "");
+//    editor.putString("lastName", "");
+//    editor.putString("email", "");
+//    editor.putString("password", "");
+//    editor.apply();
+//  }
 }
