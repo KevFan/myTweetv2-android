@@ -18,8 +18,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.models.Tweet;
@@ -42,7 +49,7 @@ import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
  */
 
 public class AddTweetFragment extends BaseTweetFragment implements View.OnClickListener,
-    TextWatcher, Callback<Tweet> {
+    TextWatcher, Callback<Tweet>, OnMapReadyCallback {
 
   private TextView charCount;
   private TextView tweetDate;
@@ -274,5 +281,20 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     intent.setType("image/*");
     intent.setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+  }
+
+  @Override
+  public void onMapReady(GoogleMap googleMap) {
+    googleMap.clear();
+    addTweets(app.timeLine, googleMap);
+  }
+
+  public void addTweets(List<Tweet> list, GoogleMap googleMap){
+    for(Tweet tweet : list)
+      googleMap.addMarker(new MarkerOptions()
+          .position(new LatLng(tweet.marker.coords.latitude, tweet.marker.coords.longitude))
+          .title(tweet.tweetDate.toString())
+          .snippet(tweet.tweetText)
+          .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_round)));
   }
 }
