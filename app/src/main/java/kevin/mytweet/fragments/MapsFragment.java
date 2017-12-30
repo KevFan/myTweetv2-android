@@ -21,14 +21,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Tweet;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -226,6 +232,21 @@ public class MapsFragment extends SupportMapFragment implements
     info("on resume");
     super.onResume();
     getMapAsync(this);
+
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
+    call.enqueue(new Callback<List<Tweet>>() {
+      @Override
+      public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+        info("got all tweets");
+        addTweets(response.body());
+      }
+
+      @Override
+      public void onFailure(Call<List<Tweet>> call, Throwable t) {
+        info(t.toString());
+        info("i have failed");
+      }
+    });
     if (checkPermission()) {
       if (app.mCurrentLocation != null) {
         toastMessage(getActivity(), "GPS location was found!");
@@ -270,5 +291,14 @@ public class MapsFragment extends SupportMapFragment implements
     } catch (SecurityException se) {
       toastMessage(getActivity(), "Check Your Permissions on Location Updates");
     }
+  }
+
+  public void addTweets(List<Tweet> list){
+    for(Tweet tweet : list)
+      mMap.addMarker(new MarkerOptions()
+          .position(new LatLng(tweet.marker.coords.latitude, tweet.marker.coords.longitude))
+          .title(tweet.tweetDate.toString())
+          .snippet(tweet.tweetText)
+          .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_round)));
   }
 }
