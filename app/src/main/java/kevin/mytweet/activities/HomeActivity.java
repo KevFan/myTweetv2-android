@@ -27,14 +27,13 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.List;
 
-import kevin.mytweet.Map;
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.fragments.FollowFragment;
-import kevin.mytweet.fragments.SearchFragment;
-import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
+import kevin.mytweet.fragments.MapsFragment;
 import kevin.mytweet.fragments.ProfileFragment;
+import kevin.mytweet.fragments.SearchFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
+import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 import okhttp3.MediaType;
@@ -75,12 +74,12 @@ public class HomeActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
-    profilePhoto = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
+    profilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
     profilePhoto.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         // https://stackoverflow.com/questions/16389581/android-create-a-popup-that-has-multiple-selection-options
-        CharSequence colors[] = new CharSequence[] {"Update Profile Picture", "Delete Profile Picture"};
+        CharSequence colors[] = new CharSequence[]{"Update Profile Picture", "Delete Profile Picture"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
         builder.setTitle("Profile Picture Options");
@@ -203,7 +202,8 @@ public class HomeActivity extends AppCompatActivity
           .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
       toastMessage(this, "Signing out");
     } else if (id == R.id.nav_map) {
-      startActivity(new Intent(this, Map.class));
+      Fragment fragment = new MapsFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
     }
 
     drawer.closeDrawer(GravityCompat.START);
@@ -280,6 +280,8 @@ public class HomeActivity extends AppCompatActivity
         // permission was granted
         selectImage();
       }
+    } else {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
   }
 
