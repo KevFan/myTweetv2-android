@@ -23,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.Date;
@@ -140,9 +141,12 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
 //          app.addTweet(tweet);
 //          app.save();
           Call<Tweet> call;
+          tweet.marker.coords.latitude = app.mCurrentLocation.getLatitude();
+          tweet.marker.coords.longitude = app.mCurrentLocation.getLongitude();
           if (imageFile == null) {
             call = (Call<Tweet>) app.tweetService.createTweet(tweet);
           } else {
+            // TODO: marker doesn't get saved by api request if uploading picture
             RequestBody requestFile =
                 RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
             MultipartBody.Part body =
@@ -153,7 +157,11 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
             RequestBody tweetDate =
                 RequestBody.create(
                     MediaType.parse("multipart/form-data"), tweet.tweetDate.toString());
-            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body);
+//            RequestBody marker =
+//                RequestBody.create(
+//                    MediaType.parse("multipart/form-data"), "test");
+            MultipartBody.Part marker = MultipartBody.Part.createFormData("marker", new Gson().toJson(tweet.marker));
+            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body, marker);
           }
           call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");

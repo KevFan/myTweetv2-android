@@ -116,6 +116,7 @@ public class MapsFragment extends SupportMapFragment implements
 
     initListeners();
     if (checkPermission()) {
+      startLocationUpdates();
       mMap.setMyLocationEnabled(true);
       initCamera(app.mCurrentLocation);
     } else if (!checkPermission()) {
