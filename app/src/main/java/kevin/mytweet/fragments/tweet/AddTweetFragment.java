@@ -146,7 +146,6 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
           if (imageFile == null) {
             call = (Call<Tweet>) app.tweetService.createTweet(tweet);
           } else {
-            // TODO: marker doesn't get saved by api request if uploading picture
             RequestBody requestFile =
                 RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
             MultipartBody.Part body =
@@ -157,11 +156,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
             RequestBody tweetDate =
                 RequestBody.create(
                     MediaType.parse("multipart/form-data"), tweet.tweetDate.toString());
-//            RequestBody marker =
-//                RequestBody.create(
-//                    MediaType.parse("multipart/form-data"), "test");
-            MultipartBody.Part marker = MultipartBody.Part.createFormData("marker", new Gson().toJson(tweet.marker));
-            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body, marker);
+            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body, tweet.marker);
           }
           call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");
