@@ -29,11 +29,11 @@ import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.fragments.FollowFragment;
-import kevin.mytweet.fragments.SearchFragment;
-import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
+import kevin.mytweet.fragments.MapsFragment;
 import kevin.mytweet.fragments.ProfileFragment;
+import kevin.mytweet.fragments.SearchFragment;
 import kevin.mytweet.fragments.UpdateAccountFragment;
+import kevin.mytweet.fragments.timeline.GlobalTimeLineFragment;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 import okhttp3.MediaType;
@@ -47,6 +47,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.PictureHelper.PICK_IMAGE;
 import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
+import static kevin.mytweet.helpers.PictureHelper.setGetPictureIntent;
 
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,12 +75,12 @@ public class HomeActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
-    profilePhoto = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
+    profilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
     profilePhoto.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         // https://stackoverflow.com/questions/16389581/android-create-a-popup-that-has-multiple-selection-options
-        CharSequence colors[] = new CharSequence[] {"Update Profile Picture", "Delete Profile Picture"};
+        CharSequence colors[] = new CharSequence[]{"Update Profile Picture", "Delete Profile Picture"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
         builder.setTitle("Profile Picture Options");
@@ -88,7 +89,7 @@ public class HomeActivity extends AppCompatActivity
           public void onClick(DialogInterface dialog, int which) {
             if (which == 0) {
               drawer.closeDrawer(GravityCompat.START);
-              checkContactsReadPermission();
+              checkExternalStorageReadPermission();
             } else {
               drawer.closeDrawer(GravityCompat.START);
               Call<User> call = (Call<User>) app.tweetService.deleteProfilePicture(currentUser._id);
@@ -201,6 +202,9 @@ public class HomeActivity extends AppCompatActivity
       startActivity(new Intent(this, Welcome.class)
           .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
       toastMessage(this, "Signing out");
+    } else if (id == R.id.nav_map) {
+      Fragment fragment = new MapsFragment();
+      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
     }
 
     drawer.closeDrawer(GravityCompat.START);
@@ -212,34 +216,27 @@ public class HomeActivity extends AppCompatActivity
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == PICK_IMAGE) {
-      try {
-        Uri selectedImage = data.getData();
-        File file = new File(getRealPathFromURI_API19(this, selectedImage));
+      File file = new File(getRealPathFromURI_API19(this, data.getData()));
+      RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
-        RequestBody requestFile =
-            RequestBody.create(MediaType.parse("multipart/form-data"), file);
+      // MultipartBody.Part is used to send also the actual file name
+      MultipartBody.Part body =
+          MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+      Call<User> call = (Call<User>) app.tweetService.updateProfilePicture(currentUser._id, body);
+      call.enqueue(new Callback<User>() {
+        @Override
+        public void onResponse(Call<User> call, Response<User> response) {
+          currentUser = response.body();
+          Picasso.with(HomeActivity.this).load(response.body().image).into(profilePhoto);
+          toastMessage(HomeActivity.this, "Profile photo updated");
+        }
 
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body =
-            MultipartBody.Part.createFormData("image", file.getName(), requestFile);
-        Call<User> call = (Call<User>) app.tweetService.updateProfilePicture(currentUser._id, body);
-        call.enqueue(new Callback<User>() {
-          @Override
-          public void onResponse(Call<User> call, Response<User> response) {
-            currentUser = response.body();
-            Picasso.with(HomeActivity.this).load(response.body().image).into(profilePhoto);
-            toastMessage(HomeActivity.this, "Profile photo updated");
-          }
-
-          @Override
-          public void onFailure(Call<User> call, Throwable t) {
-            toastMessage(HomeActivity.this, "Failed to update profile photo");
-            info(t.toString());
-          }
-        });
-      } catch (Exception e) {
-        info(e.toString());
-      }
+        @Override
+        public void onFailure(Call<User> call, Throwable t) {
+          toastMessage(HomeActivity.this, "Failed to update profile photo");
+          info(t.toString());
+        }
+      });
     }
   }
 
@@ -247,7 +244,7 @@ public class HomeActivity extends AppCompatActivity
    * Check for permission to read contacts
    * https://developer.android.com/training/permissions/requesting.html
    */
-  private void checkContactsReadPermission() {
+  private void checkExternalStorageReadPermission() {
     // Here, thisActivity is the current activity
     if (ContextCompat.checkSelfPermission(this,
         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -277,15 +274,13 @@ public class HomeActivity extends AppCompatActivity
         // permission was granted
         selectImage();
       }
+    } else {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
   }
 
   public void selectImage() {
-    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
-    Intent intent = new Intent();
-    intent.setType("image/*");
-    intent.setAction(Intent.ACTION_GET_CONTENT);
-    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    startActivityForResult(Intent.createChooser(setGetPictureIntent(), "Select Picture"), PICK_IMAGE);
   }
 
   public static void setUserIdToFragment(Fragment fragment, String userId) {

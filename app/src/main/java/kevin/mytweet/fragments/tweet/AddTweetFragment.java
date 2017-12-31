@@ -18,8 +18,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.models.Tweet;
@@ -35,6 +43,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.PictureHelper.PICK_IMAGE;
 import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
+import static kevin.mytweet.helpers.PictureHelper.setGetPictureIntent;
 
 /**
  * Add Tweet Fragment - used to add tweet
@@ -42,7 +51,7 @@ import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
  */
 
 public class AddTweetFragment extends BaseTweetFragment implements View.OnClickListener,
-    TextWatcher, Callback<Tweet> {
+    TextWatcher, Callback<Tweet>, OnMapReadyCallback {
 
   private TextView charCount;
   private TextView tweetDate;
@@ -133,6 +142,8 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
 //          app.addTweet(tweet);
 //          app.save();
           Call<Tweet> call;
+          tweet.marker.coords.latitude = app.mCurrentLocation.getLatitude();
+          tweet.marker.coords.longitude = app.mCurrentLocation.getLongitude();
           if (imageFile == null) {
             call = (Call<Tweet>) app.tweetService.createTweet(tweet);
           } else {
@@ -146,7 +157,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
             RequestBody tweetDate =
                 RequestBody.create(
                     MediaType.parse("multipart/form-data"), tweet.tweetDate.toString());
-            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body);
+            call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body, tweet.marker);
           }
           call.enqueue(this);
           toastMessage(getActivity(), "Message Sent !! ");
@@ -220,14 +231,9 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == PICK_IMAGE) {
-      try {
-        Uri selectedImage = data.getData();
-        imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
-        tweetImage.setImageURI(selectedImage);
-        toastMessage(getActivity(), getRealPathFromURI_API19(getActivity(), selectedImage));
-      } catch (Exception e) {
-        info(e.toString());
-      }
+      Uri selectedImage = data.getData();
+      imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
+      tweetImage.setImageURI(selectedImage);
     }
   }
 
@@ -238,6 +244,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
    */
   private void checkExternalStorageReadPermission() {
     // Here, thisActivity is the current activity
+
     if (ContextCompat.checkSelfPermission(getActivity(),
         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       //We can request the permission.
@@ -269,10 +276,21 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   }
 
   public void selectImage() {
-    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
-    Intent intent = new Intent();
-    intent.setType("image/*");
-    intent.setAction(Intent.ACTION_GET_CONTENT);
-    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    startActivityForResult(Intent.createChooser(setGetPictureIntent(), "Select Picture"), PICK_IMAGE);
+  }
+
+  @Override
+  public void onMapReady(GoogleMap googleMap) {
+    googleMap.clear();
+    addTweets(app.timeLine, googleMap);
+  }
+
+  public void addTweets(List<Tweet> list, GoogleMap googleMap){
+    for(Tweet tweet : list)
+      googleMap.addMarker(new MarkerOptions()
+          .position(new LatLng(tweet.marker.coords.latitude, tweet.marker.coords.longitude))
+          .title(tweet.tweetDate.toString())
+          .snippet(tweet.tweetText)
+          .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_round)));
   }
 }

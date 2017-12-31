@@ -3,7 +3,9 @@ package kevin.mytweet.app;
 import java.util.List;
 import java.util.stream.Stream;
 
+import kevin.mytweet.models.Coords;
 import kevin.mytweet.models.Follow;
+import kevin.mytweet.models.Marker;
 import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
 import okhttp3.MultipartBody;
@@ -48,7 +50,9 @@ public interface MyTweetService {
   @Multipart
   @POST("/api/tweets")
   Call<Tweet> createTweetWithPicture(@Part("tweetText") RequestBody tweetText,
-                                     @Part("tweetDate") RequestBody tweetDate, @Part MultipartBody.Part image);
+                                     @Part("tweetDate") RequestBody tweetDate,
+                                     @Part MultipartBody.Part image,
+                                     @Part("marker") Marker marker);
 
   @POST("/api/tweets")
   Call<Tweet> createTweet(@Body Tweet tweet);

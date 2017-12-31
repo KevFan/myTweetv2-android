@@ -14,6 +14,7 @@ public class Tweet {
   public String _id;
   public User tweetUser;
   public String tweetImage;
+  public Marker marker = new Marker();
 
   /**
    * Tweet constructor

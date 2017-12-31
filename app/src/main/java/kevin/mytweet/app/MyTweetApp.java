@@ -4,8 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -43,7 +48,7 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 public class MyTweetApp extends Application implements Callback<Token> {
   public MyTweetService tweetService;
   public MyTweetServiceOpen tweetServiceOpen;
-  public boolean         tweetServiceAvailable = false;
+  public boolean tweetServiceAvailable = false;
 //  public String          service_url  = "http://192.168.0.8:4000";   // Standard Emulator IP Address
 //  public String          service_url  = "https://test-remote-myweet.herokuapp.com";   // Standard Emulator IP Address
 
@@ -56,6 +61,10 @@ public class MyTweetApp extends Application implements Callback<Token> {
 
   private static final String FILENAME = "myTweetData.json";
 
+  /* Client used to interact with Google APIs. */
+  public GoogleApiClient mGoogleApiClient;
+  public Location mCurrentLocation;
+
   /**
    * Called when application is first created
    * If the last previous logged in user, haven't logged out, their details are still in shared
@@ -67,6 +76,10 @@ public class MyTweetApp extends Application implements Callback<Token> {
     info("MyTweet App Started");
 //    users = load();
     app = this;
+    mGoogleApiClient = new GoogleApiClient.Builder(this)
+        .addApi(LocationServices.API)
+        .build();
+    mGoogleApiClient.connect();
     // If current user is still logged in, log them in instead of starting welcome activity
 //    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //    if (successLogin(prefs.getString("email", null), prefs.getString("password", null))) {
@@ -179,9 +192,8 @@ public class MyTweetApp extends Application implements Callback<Token> {
     timeLine.remove(tweet);
   }
 
-  public void validUser (String email, String password)
-  {
-    User user = new User ("", "", email, password);
+  public void validUser(String email, String password) {
+    User user = new User("", "", email, password);
     info(user.email + " " + user.password);
     Call<Token> call = (Call<Token>) tweetServiceOpen.authenticate(user);
     call.enqueue(this);
@@ -190,9 +202,9 @@ public class MyTweetApp extends Application implements Callback<Token> {
   @Override
   public void onResponse(Call<Token> call, Response<Token> response) {
     Token auth = response.body();
-    if(auth.user != null) {
+    if (auth.user != null) {
       currentUser = auth.user;
-      tweetService =  RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
+      tweetService = RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
       info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
       startActivity(new Intent(this, HomeActivity.class));
     } else {

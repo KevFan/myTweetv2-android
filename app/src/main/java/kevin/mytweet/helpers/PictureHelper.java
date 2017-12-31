@@ -1,6 +1,7 @@
 package kevin.mytweet.helpers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.DocumentsContract;
@@ -14,6 +15,14 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 
 public class PictureHelper {
   public static final int PICK_IMAGE = 1;
+
+  public static Intent setGetPictureIntent() {
+    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    return intent;
+  }
 
   // https://stackoverflow.com/questions/29646975/how-to-get-file-path-of-image-from-uri-in-android-lollipop
   public static String getRealPathFromURI_API19(Context context, Uri uri) {

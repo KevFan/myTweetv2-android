@@ -12,11 +12,13 @@ import android.widget.Button;
 
 import java.util.List;
 
+import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Tweet;
 
 import static kevin.mytweet.helpers.ContactHelper.getContact;
 import static kevin.mytweet.helpers.ContactHelper.getEmail;
+import static kevin.mytweet.helpers.ContactHelper.sendEmail;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**

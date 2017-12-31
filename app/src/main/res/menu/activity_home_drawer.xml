@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_menu_home"
             android:title="Home"/>
         <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="View on Map"/>
+        <item
             android:id="@+id/nav_global_timeline"
             android:icon="@drawable/ic_menu_share"
             android:title="Global Timeline"/>
