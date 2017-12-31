@@ -47,6 +47,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.PictureHelper.PICK_IMAGE;
 import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
+import static kevin.mytweet.helpers.PictureHelper.setGetPictureIntent;
 
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
@@ -88,7 +89,7 @@ public class HomeActivity extends AppCompatActivity
           public void onClick(DialogInterface dialog, int which) {
             if (which == 0) {
               drawer.closeDrawer(GravityCompat.START);
-              checkContactsReadPermission();
+              checkExternalStorageReadPermission();
             } else {
               drawer.closeDrawer(GravityCompat.START);
               Call<User> call = (Call<User>) app.tweetService.deleteProfilePicture(currentUser._id);
@@ -215,34 +216,27 @@ public class HomeActivity extends AppCompatActivity
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == PICK_IMAGE) {
-      try {
-        Uri selectedImage = data.getData();
-        File file = new File(getRealPathFromURI_API19(this, selectedImage));
+      File file = new File(getRealPathFromURI_API19(this, data.getData()));
+      RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
-        RequestBody requestFile =
-            RequestBody.create(MediaType.parse("multipart/form-data"), file);
+      // MultipartBody.Part is used to send also the actual file name
+      MultipartBody.Part body =
+          MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+      Call<User> call = (Call<User>) app.tweetService.updateProfilePicture(currentUser._id, body);
+      call.enqueue(new Callback<User>() {
+        @Override
+        public void onResponse(Call<User> call, Response<User> response) {
+          currentUser = response.body();
+          Picasso.with(HomeActivity.this).load(response.body().image).into(profilePhoto);
+          toastMessage(HomeActivity.this, "Profile photo updated");
+        }
 
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body =
-            MultipartBody.Part.createFormData("image", file.getName(), requestFile);
-        Call<User> call = (Call<User>) app.tweetService.updateProfilePicture(currentUser._id, body);
-        call.enqueue(new Callback<User>() {
-          @Override
-          public void onResponse(Call<User> call, Response<User> response) {
-            currentUser = response.body();
-            Picasso.with(HomeActivity.this).load(response.body().image).into(profilePhoto);
-            toastMessage(HomeActivity.this, "Profile photo updated");
-          }
-
-          @Override
-          public void onFailure(Call<User> call, Throwable t) {
-            toastMessage(HomeActivity.this, "Failed to update profile photo");
-            info(t.toString());
-          }
-        });
-      } catch (Exception e) {
-        info(e.toString());
-      }
+        @Override
+        public void onFailure(Call<User> call, Throwable t) {
+          toastMessage(HomeActivity.this, "Failed to update profile photo");
+          info(t.toString());
+        }
+      });
     }
   }
 
@@ -250,7 +244,7 @@ public class HomeActivity extends AppCompatActivity
    * Check for permission to read contacts
    * https://developer.android.com/training/permissions/requesting.html
    */
-  private void checkContactsReadPermission() {
+  private void checkExternalStorageReadPermission() {
     // Here, thisActivity is the current activity
     if (ContextCompat.checkSelfPermission(this,
         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -286,11 +280,7 @@ public class HomeActivity extends AppCompatActivity
   }
 
   public void selectImage() {
-    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
-    Intent intent = new Intent();
-    intent.setType("image/*");
-    intent.setAction(Intent.ACTION_GET_CONTENT);
-    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    startActivityForResult(Intent.createChooser(setGetPictureIntent(), "Select Picture"), PICK_IMAGE);
   }
 
   public static void setUserIdToFragment(Fragment fragment, String userId) {

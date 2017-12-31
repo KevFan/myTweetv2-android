@@ -43,6 +43,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.PictureHelper.PICK_IMAGE;
 import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
+import static kevin.mytweet.helpers.PictureHelper.setGetPictureIntent;
 
 /**
  * Add Tweet Fragment - used to add tweet
@@ -230,14 +231,9 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == PICK_IMAGE) {
-      try {
-        Uri selectedImage = data.getData();
-        imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
-        tweetImage.setImageURI(selectedImage);
-        toastMessage(getActivity(), getRealPathFromURI_API19(getActivity(), selectedImage));
-      } catch (Exception e) {
-        info(e.toString());
-      }
+      Uri selectedImage = data.getData();
+      imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
+      tweetImage.setImageURI(selectedImage);
     }
   }
 
@@ -248,6 +244,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
    */
   private void checkExternalStorageReadPermission() {
     // Here, thisActivity is the current activity
+
     if (ContextCompat.checkSelfPermission(getActivity(),
         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       //We can request the permission.
@@ -279,11 +276,7 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   }
 
   public void selectImage() {
-    // https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
-    Intent intent = new Intent();
-    intent.setType("image/*");
-    intent.setAction(Intent.ACTION_GET_CONTENT);
-    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    startActivityForResult(Intent.createChooser(setGetPictureIntent(), "Select Picture"), PICK_IMAGE);
   }
 
   @Override
