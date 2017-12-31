@@ -294,12 +294,15 @@ public class MapsFragment extends SupportMapFragment implements
     }
   }
 
-  public void addTweets(List<Tweet> list){
-    for(Tweet tweet : list)
-      mMap.addMarker(new MarkerOptions()
-          .position(new LatLng(tweet.marker.coords.latitude, tweet.marker.coords.longitude))
-          .title(tweet.tweetDate.toString())
-          .snippet(tweet.tweetText)
-          .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_round)));
+  public void addTweets(List<Tweet> list) {
+    for (Tweet tweet : list) {
+      if ((tweet.marker.coords.latitude != 0) && tweet.marker.coords.longitude != 0) {
+        mMap.addMarker(new MarkerOptions()
+            .position(new LatLng(tweet.marker.coords.latitude, tweet.marker.coords.longitude))
+            .title(tweet.tweetDate.toString())
+            .snippet(tweet.tweetText)
+            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher_round)));
+      }
+    }
   }
 }
