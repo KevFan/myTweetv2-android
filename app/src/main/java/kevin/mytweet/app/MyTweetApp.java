@@ -80,6 +80,14 @@ public class MyTweetApp extends Application implements Callback<Token> {
         .addApi(LocationServices.API)
         .build();
     mGoogleApiClient.connect();
+    Token token = load();
+    if (token != null) {
+      info("Got valid saved token");
+      currentUser = token.user;
+      tweetService = RetrofitServiceFactory.createService(MyTweetService.class, token.token);
+      info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
+      startActivity(new Intent(this, HomeActivity.class));
+    }
     // If current user is still logged in, log them in instead of starting welcome activity
 //    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //    if (successLogin(prefs.getString("email", null), prefs.getString("password", null))) {
@@ -100,53 +108,54 @@ public class MyTweetApp extends Application implements Callback<Token> {
     return app;
   }
 
-//  /**
-//   * Uses GSon and output stream to write the current list of users to a json file
-//   */
-//  public void save() {
-//    Gson gson = new GsonBuilder().create();
-//    Writer writer;
-//    try {
-//      OutputStream out = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-//      writer = new OutputStreamWriter(out);
-//      writer.write(gson.toJson(users));
-//      writer.close();
-//      info("Saved by gson!!");
-//    } catch (Exception e) {
-//      info(e.toString());
-//    }
-//  }
+  /**
+   * Uses GSon and output stream to write the current list of users to a json file
+   */
+  public void save(Token token) {
+    Gson gson = new GsonBuilder().create();
+    Writer writer;
+    try {
+      OutputStream out = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+      writer = new OutputStreamWriter(out);
+      writer.write(gson.toJson(token));
+      writer.close();
+      info("Token Saved by gson!!");
+    } catch (Exception e) {
+      info(e.toString());
+    }
+  }
 //
-//  /**
-//   * Using GSon and input stream, load a list of users from a json file
-//   *
-//   * @return List of users
-//   */
-//  public List<User> load() {
-//    List<User> users = new ArrayList<User>();
-//    Gson gson = new Gson();
-//    Type modelType = new TypeToken<List<User>>() {
-//    }.getType();
-//    BufferedReader reader;
-//    try {
-//      // open and read the file into a StringBuilder
-//      InputStream in = this.openFileInput(FILENAME);
-//      reader = new BufferedReader(new InputStreamReader(in));
-//      StringBuilder jsonString = new StringBuilder();
-//      String line;
-//      while ((line = reader.readLine()) != null) {
-//        // line breaks are omitted and irrelevant
-//        jsonString.append(line);
-//      }
-//      reader.close();
-//      users = gson.fromJson(jsonString.toString(), modelType);
-//      info("Loaded by GSon!!");
-//    } catch (Exception e) {
-//      info(e.toString());
-//    }
-//
-//    return users;
-//  }
+  /**
+   * Using GSon and input stream, load a list of users from a json file
+   *
+   * @return List of users
+   */
+  public Token load() {
+    Token token;
+    Gson gson = new Gson();
+    Type modelType = new TypeToken<Token>() {}.getType();
+    BufferedReader reader;
+    try {
+      // open and read the file into a StringBuilder
+      InputStream in = this.openFileInput(FILENAME);
+      reader = new BufferedReader(new InputStreamReader(in));
+      StringBuilder jsonString = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        // line breaks are omitted and irrelevant
+        jsonString.append(line);
+      }
+      reader.close();
+      token = gson.fromJson(jsonString.toString(), modelType);
+      info(" Token Loaded by GSon!!");
+    } catch (Exception e) {
+      token = null;
+      info("Something went wrong loading tokens");
+      info(e.toString());
+    }
+
+    return token;
+  }
 //
 //  /**
 //   * Sets shared preference values to current user
@@ -203,6 +212,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
   public void onResponse(Call<Token> call, Response<Token> response) {
     Token auth = response.body();
     if (auth.user != null) {
+      save(auth); // Save the Token
       currentUser = auth.user;
       tweetService = RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
       info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
