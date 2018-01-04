@@ -199,6 +199,8 @@ public class HomeActivity extends AppCompatActivity
       manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
     } else if (id == R.id.nav_signout) {
       //        clearPreferenceSettings();
+      info("Signing out - clearing back stack & token");
+      app.save(null); // Save null token to that current token would be cleared
       startActivity(new Intent(this, Welcome.class)
           .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
       toastMessage(this, "Signing out");

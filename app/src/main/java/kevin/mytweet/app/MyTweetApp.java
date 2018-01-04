@@ -87,6 +87,8 @@ public class MyTweetApp extends Application implements Callback<Token> {
       tweetService = RetrofitServiceFactory.createService(MyTweetService.class, token.token);
       info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
       startActivity(new Intent(this, HomeActivity.class));
+    } else {
+      info("Token is null - launching into welcome activity");
     }
     // If current user is still logged in, log them in instead of starting welcome activity
 //    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -147,7 +149,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
       }
       reader.close();
       token = gson.fromJson(jsonString.toString(), modelType);
-      info(" Token Loaded by GSon!!");
+      info("Token Loaded by GSon!!");
     } catch (Exception e) {
       token = null;
       info("Something went wrong loading tokens");
