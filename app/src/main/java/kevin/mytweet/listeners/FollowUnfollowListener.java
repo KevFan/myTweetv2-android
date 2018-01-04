@@ -35,6 +35,7 @@ public class FollowUnfollowListener implements CompoundButton.OnCheckedChangeLis
       call.enqueue(new Callback<Follow>() {
         @Override
         public void onResponse(Call<Follow> call, Response<Follow> response) {
+          app.followings.add(response.body());
           info("Following " + user.firstName);
         }
 
@@ -49,6 +50,11 @@ public class FollowUnfollowListener implements CompoundButton.OnCheckedChangeLis
       call.enqueue(new Callback<Follow>() {
         @Override
         public void onResponse(Call<Follow> call, Response<Follow> response) {
+          for (Follow follow : app.followings) {
+            if (follow.following._id.equals(user._id)) {
+              app.followings.remove(follow);
+            }
+          }
           info("unfollowed " + user.firstName);
         }
 
