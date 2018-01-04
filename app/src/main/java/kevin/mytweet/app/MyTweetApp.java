@@ -32,6 +32,8 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.loadToken;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
 /**
  * MyTweetApp - main application
@@ -49,7 +51,6 @@ public class MyTweetApp extends Application implements Callback<Token> {
   public User currentUser = null;
   protected static MyTweetApp app;
 
-  private static final String FILENAME = "myTweetData.json";
 
   /* Client used to interact with Google APIs. */
   public GoogleApiClient mGoogleApiClient;
@@ -70,7 +71,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
         .build();
     mGoogleApiClient.connect();
     sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
-    Token token = load();
+    Token token = loadToken(this);
     if (token != null) {
       info("Got valid saved token");
       currentUser = token.user;
@@ -100,54 +101,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
     return app;
   }
 
-  /**
-   * Uses GSon and output stream to write the current list of users to a json file
-   */
-  public void save(Token token) {
-    Gson gson = new GsonBuilder().create();
-    Writer writer;
-    try {
-      OutputStream out = this.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-      writer = new OutputStreamWriter(out);
-      writer.write(gson.toJson(token));
-      writer.close();
-      info("Token Saved by gson!!");
-    } catch (Exception e) {
-      info(e.toString());
-    }
-  }
 
-  /**
-   * Using GSon and input stream, load a list of users from a json file
-   *
-   * @return List of users
-   */
-  public Token load() {
-    Token token;
-    Gson gson = new Gson();
-    Type modelType = new TypeToken<Token>() {}.getType();
-    BufferedReader reader;
-    try {
-      // open and read the file into a StringBuilder
-      InputStream in = this.openFileInput(FILENAME);
-      reader = new BufferedReader(new InputStreamReader(in));
-      StringBuilder jsonString = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        // line breaks are omitted and irrelevant
-        jsonString.append(line);
-      }
-      reader.close();
-      token = gson.fromJson(jsonString.toString(), modelType);
-      info("Token Loaded by GSon!!");
-    } catch (Exception e) {
-      token = null;
-      info("Something went wrong loading tokens");
-      info(e.toString());
-    }
-
-    return token;
-  }
 //
 //  /**
 //   * Sets shared preference values to current user
@@ -204,7 +158,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
   public void onResponse(Call<Token> call, Response<Token> response) {
     Token auth = response.body();
     if (auth.user != null) {
-      save(auth); // Save the Token
+      saveToken(this, auth); // Save the Token
       currentUser = auth.user;
       tweetService = RetrofitServiceFactory.createService(MyTweetService.class, auth.token);
       info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);

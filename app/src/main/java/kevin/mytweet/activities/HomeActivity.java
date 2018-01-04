@@ -48,6 +48,7 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.PictureHelper.PICK_IMAGE;
 import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
 import static kevin.mytweet.helpers.PictureHelper.setGetPictureIntent;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
@@ -200,7 +201,7 @@ public class HomeActivity extends AppCompatActivity
     } else if (id == R.id.nav_signout) {
       //        clearPreferenceSettings();
       info("Signing out - clearing back stack & token");
-      app.save(null); // Save null token to that current token would be cleared
+      saveToken(this, null); // Save null token to that current token would be cleared
       startActivity(new Intent(this, Welcome.class)
           .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
       toastMessage(this, "Signing out");
