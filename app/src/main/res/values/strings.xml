@@ -37,4 +37,6 @@
     <string name="selectImage">Select Image</string>
     <string name="noFollowMessage">No follows yet :(</string>
     <string name="title_map">Map</string>
+    <string name="refresh_interval_preference_key">refresh_interval</string>
+
 </resources>

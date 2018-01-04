@@ -3,12 +3,8 @@ package kevin.mytweet.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
-import android.preference.PreferenceManager;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
@@ -26,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.activities.HomeActivity;
-import kevin.mytweet.adapters.ListUserAdapter;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.Token;
 import kevin.mytweet.models.Tweet;
@@ -34,8 +29,6 @@ import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -49,9 +42,6 @@ public class MyTweetApp extends Application implements Callback<Token> {
   public MyTweetService tweetService;
   public MyTweetServiceOpen tweetServiceOpen;
   public boolean tweetServiceAvailable = false;
-//  public String          service_url  = "http://192.168.0.8:4000";   // Standard Emulator IP Address
-//  public String          service_url  = "https://test-remote-myweet.herokuapp.com";   // Standard Emulator IP Address
-
   public List<User> users = new ArrayList<>();
   public List<Follow> followers = new ArrayList<>();
   public List<Follow> followings = new ArrayList<>();
@@ -74,12 +64,12 @@ public class MyTweetApp extends Application implements Callback<Token> {
   public void onCreate() {
     super.onCreate();
     info("MyTweet App Started");
-//    users = load();
     app = this;
     mGoogleApiClient = new GoogleApiClient.Builder(this)
         .addApi(LocationServices.API)
         .build();
     mGoogleApiClient.connect();
+    sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
     Token token = load();
     if (token != null) {
       info("Got valid saved token");
@@ -126,7 +116,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
       info(e.toString());
     }
   }
-//
+
   /**
    * Using GSon and input stream, load a list of users from a json file
    *
