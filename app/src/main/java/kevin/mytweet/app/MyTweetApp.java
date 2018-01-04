@@ -71,24 +71,6 @@ public class MyTweetApp extends Application implements Callback<Token> {
         .build();
     mGoogleApiClient.connect();
     sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
-    Token token = loadToken(this);
-    if (token != null) {
-      info("Got valid saved token");
-      currentUser = token.user;
-      tweetService = RetrofitServiceFactory.createService(MyTweetService.class, token.token);
-      info("Authenticated " + currentUser.firstName + ' ' + currentUser.lastName);
-      startActivity(new Intent(this, HomeActivity.class));
-    } else {
-      info("Token is null - launching into welcome activity");
-    }
-    // If current user is still logged in, log them in instead of starting welcome activity
-//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//    if (successLogin(prefs.getString("email", null), prefs.getString("password", null))) {
-//      info("Logging in previous user: " + prefs.getString("email", null));
-//      startActivity(new Intent(this, HomeActivity.class));
-//    } else {
-//      info("No logged in user detected - starting welcome activity");
-//    }
     tweetServiceOpen = RetrofitServiceFactory.createService(MyTweetServiceOpen.class);
   }
 
@@ -117,7 +99,6 @@ public class MyTweetApp extends Application implements Callback<Token> {
 //    editor.apply();
 //  }
 
-  //
   public void addTweet(Tweet tweet) {
     timeLine.add(tweet);
   }

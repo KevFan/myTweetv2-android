@@ -11,18 +11,23 @@ import java.util.List;
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.app.MyTweetService;
+import kevin.mytweet.app.RetrofitServiceFactory;
+import kevin.mytweet.models.Token;
 import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.loadToken;
 
 /**
  * Welcome Activity
  */
 
 public class Welcome extends AppCompatActivity implements View.OnClickListener {
+  public MyTweetApp app = MyTweetApp.getApp();
 
   /**
    * Called when activity is first created
@@ -32,6 +37,17 @@ public class Welcome extends AppCompatActivity implements View.OnClickListener {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_welcome);
+
+    Token token = loadToken(this);
+    if (token != null) {
+      info("Got valid saved token");
+      app.currentUser = token.user;
+      app.tweetService = RetrofitServiceFactory.createService(MyTweetService.class, token.token);
+      info("Authenticated by load: " + app.currentUser.firstName + ' ' + app.currentUser.lastName);
+      startActivity(new Intent(this, HomeActivity.class));
+    } else {
+      info("Token is null - launching into welcome activity");
+    }
 
     Button loginButton = (Button) findViewById(R.id.welcomeLogin);
     loginButton.setOnClickListener(this);
