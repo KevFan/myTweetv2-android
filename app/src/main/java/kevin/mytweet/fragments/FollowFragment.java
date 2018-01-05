@@ -31,6 +31,7 @@ import static kevin.mytweet.helpers.IntentHelper.startActivityWithData;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveFollowers;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveFollowings;
 
 /**
  * FollowFragment Fragment - lists the user follows using custom adapter
@@ -142,6 +143,8 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
         saveFollowers(getActivity(), response.body());
       } else {
         app.followings = response.body();
+        adapter = new ListFollowsAdapter(getActivity(), app.followings, followOrFollowing);
+        saveFollowings(getActivity(), response.body());
       }
       if (mSwipeRefreshLayout != null)
         mSwipeRefreshLayout.setRefreshing(false);

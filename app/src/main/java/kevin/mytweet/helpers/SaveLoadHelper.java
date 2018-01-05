@@ -67,6 +67,14 @@ public class SaveLoadHelper {
     return new Gson().fromJson(readFromFile(context, FILE_FOLLOWERS), new TypeToken<List<Follow>>() {}.getType());
   }
 
+  public static void saveFollowings(Context context, List<Follow> followings) {
+    writeToFile(context, new GsonBuilder().create().toJson(followings), FILE_FOLLOWINGS);
+  }
+
+  public static List<Follow> loadFollowings(Context context) {
+    return new Gson().fromJson(readFromFile(context, FILE_FOLLOWINGS), new TypeToken<List<Follow>>() {}.getType());
+  }
+
   private static String readFromFile(Context context, String fileName) {
     StringBuilder jsonString = new StringBuilder();
     BufferedReader reader;

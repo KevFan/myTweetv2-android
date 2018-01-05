@@ -23,6 +23,7 @@ import retrofit2.Response;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.SaveLoadHelper.loadFollowers;
+import static kevin.mytweet.helpers.SaveLoadHelper.loadFollowings;
 import static kevin.mytweet.helpers.SaveLoadHelper.loadTimeLine;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
@@ -66,6 +67,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
     if (!isOnline()) {
       timeLine = loadTimeLine(this);
       followers = loadFollowers(this);
+      followings = loadFollowings(this);
     } else {
       sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
     }
