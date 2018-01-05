@@ -138,8 +138,8 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
 
   @Override
   public void updateTimeLine() {
-    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
-    call.enqueue(new GetAllUserTweets());
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserFollowingTweets();
+    call.enqueue(new GetAllUserFollowingTweets());
   }
 
   /* ************ MultiChoiceModeListener methods (begin) *********** */
@@ -270,6 +270,23 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
       //refreshDonationList();
       adapter.timeLine = app.timeLine;
       adapter.notifyDataSetChanged();
+    }
+  }
+
+  public class GetAllUserFollowingTweets implements Callback<List<Tweet>> {
+    @Override
+    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      if (mSwipeRefreshLayout != null)
+        mSwipeRefreshLayout.setRefreshing(false);
+      updateTimeLineData(response.body());
+      toastMessage(getActivity(), "Successfully got all user and following tweets");
+    }
+
+    @Override
+    public void onFailure(Call<List<Tweet>> call, Throwable t) {
+      app.tweetServiceAvailable = false;
+      mSwipeRefreshLayout.setRefreshing(false);
+      toastMessage(getActivity(), "Failed getting all user and following tweets :(");
     }
   }
 }

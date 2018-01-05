@@ -27,7 +27,7 @@ public class RefreshUserTweetsService extends IntentService {
   @Override
   protected void onHandleIntent(Intent intent) {
     Intent localIntent = new Intent(TimeLineFragment.BROADCAST_ACTION);
-    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserFollowingTweets();
     try {
       Response<List<Tweet>> response = call.execute();
       info(String.valueOf(response.body().size()));
