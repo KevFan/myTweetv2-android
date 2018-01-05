@@ -7,6 +7,10 @@ import android.location.Location;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,7 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.loadTimeLine;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
 /**
@@ -60,6 +65,9 @@ public class MyTweetApp extends Application implements Callback<Token> {
     mGoogleApiClient.connect();
     sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
     tweetServiceOpen = RetrofitServiceFactory.createService(MyTweetServiceOpen.class);
+    if (!isOnline()) {
+      timeLine = loadTimeLine(this);
+    }
   }
 
   /**
@@ -143,4 +151,20 @@ public class MyTweetApp extends Application implements Callback<Token> {
     toastMessage(this, "Unable to authenticate with Tweet Service");
     info("Failed to Authenticated!");
   }
+
+  // https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
+  // ICMP
+  public boolean isOnline() {
+    Runtime runtime = Runtime.getRuntime();
+    try {
+      Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+      int     exitValue = ipProcess.waitFor();
+      return (exitValue == 0);
+    }
+    catch (IOException e)          { e.printStackTrace(); }
+    catch (InterruptedException e) { e.printStackTrace(); }
+
+    return false;
+  }
+
 }

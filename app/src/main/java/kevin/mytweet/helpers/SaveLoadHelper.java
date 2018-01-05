@@ -13,8 +13,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import kevin.mytweet.models.Token;
+import kevin.mytweet.models.Tweet;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
@@ -23,7 +26,8 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
  */
 
 public class SaveLoadHelper {
-  private static final String FILENAME = "myTweetData.json";
+  private static final String FILE_TOKEN = "token.json";
+  private static final String FILE_TIMELINE = "timeline.json";
 
   /**
    * Uses GSon and output stream to write the current list of users to a json file
@@ -32,7 +36,7 @@ public class SaveLoadHelper {
     Gson gson = new GsonBuilder().create();
     Writer writer;
     try {
-      OutputStream out = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+      OutputStream out = context.openFileOutput(FILE_TOKEN, Context.MODE_PRIVATE);
       writer = new OutputStreamWriter(out);
       writer.write(gson.toJson(token));
       writer.close();
@@ -54,7 +58,7 @@ public class SaveLoadHelper {
     BufferedReader reader;
     try {
       // open and read the file into a StringBuilder
-      InputStream in = context.openFileInput(FILENAME);
+      InputStream in = context.openFileInput(FILE_TOKEN);
       reader = new BufferedReader(new InputStreamReader(in));
       StringBuilder jsonString = new StringBuilder();
       String line;
@@ -72,5 +76,49 @@ public class SaveLoadHelper {
     }
 
     return token;
+  }
+
+  /**
+   * Uses GSon and output stream to write the current list of users to a json file
+   */
+  public static void saveTweets(Context context, List<Tweet> tweetList) {
+    Gson gson = new GsonBuilder().create();
+    Writer writer;
+    try {
+      OutputStream out = context.openFileOutput(FILE_TIMELINE, Context.MODE_PRIVATE);
+      writer = new OutputStreamWriter(out);
+      writer.write(gson.toJson(tweetList));
+      writer.close();
+      info("tweets Saved by gson!!");
+    } catch (Exception e) {
+      info(e.toString());
+    }
+  }
+
+  public static List<Tweet> loadTimeLine(Context context) {
+    List<Tweet> tweetList;
+    Gson gson = new Gson();
+    Type modelType = new TypeToken<List<Tweet>>() {}.getType();
+    BufferedReader reader;
+    try {
+      // open and read the file into a StringBuilder
+      InputStream in = context.openFileInput(FILE_TIMELINE);
+      reader = new BufferedReader(new InputStreamReader(in));
+      StringBuilder jsonString = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        // line breaks are omitted and irrelevant
+        jsonString.append(line);
+      }
+      reader.close();
+      tweetList = gson.fromJson(jsonString.toString(), modelType);
+      info("Tweets Loaded by GSon!!");
+    } catch (Exception e) {
+      tweetList = new ArrayList<>();
+      info("Something went wrong loading Tweets");
+      info(e.toString());
+    }
+
+    return tweetList;
   }
 }
