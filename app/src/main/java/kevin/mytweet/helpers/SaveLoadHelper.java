@@ -33,17 +33,7 @@ public class SaveLoadHelper {
    * Uses GSon and output stream to write the current list of users to a json file
    */
   public static void saveToken(Context context, Token token) {
-    Gson gson = new GsonBuilder().create();
-    Writer writer;
-    try {
-      OutputStream out = context.openFileOutput(FILE_TOKEN, Context.MODE_PRIVATE);
-      writer = new OutputStreamWriter(out);
-      writer.write(gson.toJson(token));
-      writer.close();
-      info("Token Saved by gson!!");
-    } catch (Exception e) {
-      info(e.toString());
-    }
+    writeToFile(context, new GsonBuilder().create().toJson(token), FILE_TOKEN);
   }
 
   /**
@@ -52,73 +42,52 @@ public class SaveLoadHelper {
    * @return List of users
    */
   public static Token loadToken(Context context) {
-    Token token;
-    Gson gson = new Gson();
-    Type modelType = new TypeToken<Token>() {}.getType();
-    BufferedReader reader;
-    try {
-      // open and read the file into a StringBuilder
-      InputStream in = context.openFileInput(FILE_TOKEN);
-      reader = new BufferedReader(new InputStreamReader(in));
-      StringBuilder jsonString = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        // line breaks are omitted and irrelevant
-        jsonString.append(line);
-      }
-      reader.close();
-      token = gson.fromJson(jsonString.toString(), modelType);
-      info("Token Loaded by GSon!!");
-    } catch (Exception e) {
-      token = null;
-      info("Something went wrong loading tokens");
-      info(e.toString());
-    }
-
-    return token;
+    return new Gson().fromJson(readFromFile(context, FILE_TOKEN), new TypeToken<Token>() {}.getType());
   }
 
   /**
    * Uses GSon and output stream to write the current list of users to a json file
    */
   public static void saveTweets(Context context, List<Tweet> tweetList) {
-    Gson gson = new GsonBuilder().create();
-    Writer writer;
-    try {
-      OutputStream out = context.openFileOutput(FILE_TIMELINE, Context.MODE_PRIVATE);
-      writer = new OutputStreamWriter(out);
-      writer.write(gson.toJson(tweetList));
-      writer.close();
-      info("tweets Saved by gson!!");
-    } catch (Exception e) {
-      info(e.toString());
-    }
+    writeToFile(context, new GsonBuilder().create().toJson(tweetList), FILE_TIMELINE);
   }
 
   public static List<Tweet> loadTimeLine(Context context) {
-    List<Tweet> tweetList;
-    Gson gson = new Gson();
-    Type modelType = new TypeToken<List<Tweet>>() {}.getType();
+    return new Gson().fromJson(readFromFile(context, FILE_TIMELINE), new TypeToken<List<Tweet>>() {}.getType());
+  }
+
+  private static String readFromFile(Context context, String fileName) {
+    StringBuilder jsonString = new StringBuilder();
     BufferedReader reader;
     try {
       // open and read the file into a StringBuilder
-      InputStream in = context.openFileInput(FILE_TIMELINE);
+      InputStream in = context.openFileInput(fileName);
       reader = new BufferedReader(new InputStreamReader(in));
-      StringBuilder jsonString = new StringBuilder();
       String line;
       while ((line = reader.readLine()) != null) {
         // line breaks are omitted and irrelevant
         jsonString.append(line);
       }
       reader.close();
-      tweetList = gson.fromJson(jsonString.toString(), modelType);
-      info("Tweets Loaded by GSon!!");
+      info(fileName + " successfully read");
     } catch (Exception e) {
-      tweetList = new ArrayList<>();
-      info("Something went wrong loading Tweets");
+      info("Something went reading " + fileName);
       info(e.toString());
     }
 
-    return tweetList;
+    return jsonString.toString();
+  }
+
+  private static void writeToFile(Context context, String json, String fileName) {
+    Writer writer;
+    try {
+      OutputStream out = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+      writer = new OutputStreamWriter(out);
+      writer.write(json);
+      writer.close();
+      info("saved to " + fileName);
+    } catch (Exception e) {
+      info(e.toString());
+    }
   }
 }

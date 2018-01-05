@@ -63,10 +63,12 @@ public class MyTweetApp extends Application implements Callback<Token> {
         .addApi(LocationServices.API)
         .build();
     mGoogleApiClient.connect();
-    sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
+
     tweetServiceOpen = RetrofitServiceFactory.createService(MyTweetServiceOpen.class);
     if (!isOnline()) {
       timeLine = loadTimeLine(this);
+    } else {
+      sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
     }
   }
 
