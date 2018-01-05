@@ -100,6 +100,8 @@
 
         <service android:name=".services.RefreshUserTweetsService"
                  android:exported="false"/>
+        <service android:name=".services.RefreshUserFollowingsService"
+                 android:exported="false"/>
     </application>
 
 </manifest>

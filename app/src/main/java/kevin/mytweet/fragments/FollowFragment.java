@@ -1,10 +1,12 @@
 package kevin.mytweet.fragments;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +27,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static kevin.mytweet.activities.HomeActivity.setUserIdToFragment;
 import static kevin.mytweet.helpers.IntentHelper.startActivityWithData;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -37,6 +38,9 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 public class FollowFragment extends Fragment implements AdapterView.OnItemClickListener {
   public static final String EXTRA_FOLLOW = "FOLLOW_OR_FOLLOWING";
+  public static final String BROADCAST_ACTION = "kevin.mytweet.activities.FollowFragment";
+  private IntentFilter intentFilter;
+
 
   public TextView noFollowsMessage;
   public ListView listView;
@@ -60,6 +64,8 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     followOrFollowing = (String) getArguments().getSerializable(EXTRA_FOLLOW);
     adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
     userId = (String) getArguments().getSerializable("userid");
+    registerBroadcastReceiver();
+
   }
 
   /**
@@ -145,6 +151,25 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
       info(t.toString());
       mSwipeRefreshLayout.setRefreshing(false);
       toastMessage(getActivity(), "Failed to get all " + followOrFollowing +" :(");
+    }
+  }
+
+  private void registerBroadcastReceiver() {
+    intentFilter = new IntentFilter(BROADCAST_ACTION);
+    ResponseReceiver responseReceiver = new ResponseReceiver();
+    // Registers the ResponseReceiver and its intent filters
+    LocalBroadcastManager.getInstance(getActivity()).registerReceiver(responseReceiver, intentFilter);
+  }
+
+  private class ResponseReceiver extends BroadcastReceiver {
+    //private void ResponseReceiver() {}
+    // Called when the BroadcastReceiver gets an Intent it's registered to receive
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (followOrFollowing.equals("following")) {
+        adapter.follows = app.followings;
+        adapter.notifyDataSetChanged();
+      }
     }
   }
 }

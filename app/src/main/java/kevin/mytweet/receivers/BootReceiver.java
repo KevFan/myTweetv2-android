@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import kevin.mytweet.R;
+import kevin.mytweet.services.RefreshUserFollowingsService;
 import kevin.mytweet.services.RefreshUserTweetsService;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
@@ -54,16 +55,15 @@ public class BootReceiver extends BroadcastReceiver {
     interval = interval < ONE_MINUTE ? ONE_MINUTE : interval;
 
     // Prepare an PendingIntent with a view to triggering RefreshUserTweetsService
-    PendingIntent operation = PendingIntent.getService(
-        context,
-        REQUESTCODE,
-        new Intent(context, RefreshUserTweetsService.class),
-        PendingIntent.FLAG_UPDATE_CURRENT
-    );
+    PendingIntent operation = PendingIntent.getService(context, REQUESTCODE,
+        new Intent(context, RefreshUserTweetsService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+    PendingIntent operation2 = PendingIntent.getService(context, REQUESTCODE,
+        new Intent(context, RefreshUserFollowingsService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     alarmManager.cancel(operation);//cancel any existing alarms with matching intent
     alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), interval, operation);
+    alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), interval, operation2);
 
     info("BootReceiver alarm repeats every: " + (interval / NUMBER_MILLIS_PER_MINUTE) + " minute(s).");
   }

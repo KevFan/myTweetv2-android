@@ -1,23 +1,12 @@
 package kevin.mytweet.app;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +21,6 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
-import static kevin.mytweet.helpers.SaveLoadHelper.loadToken;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
 /**
