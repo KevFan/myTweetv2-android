@@ -30,6 +30,7 @@ import retrofit2.Response;
 import static kevin.mytweet.helpers.IntentHelper.startActivityWithData;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveFollowers;
 
 /**
  * FollowFragment Fragment - lists the user follows using custom adapter
@@ -44,7 +45,6 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
 
   public TextView noFollowsMessage;
   public ListView listView;
-  public List<Follow> follows = new ArrayList<>();
   public MyTweetApp app = MyTweetApp.getApp();
   public ListFollowsAdapter adapter;
   public SwipeRefreshLayout mSwipeRefreshLayout;
@@ -62,7 +62,11 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     info("FollowFragment created");
     super.onCreate(savedInstanceState);
     followOrFollowing = (String) getArguments().getSerializable(EXTRA_FOLLOW);
-    adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
+    if (followOrFollowing.equals("follower")) {
+      adapter = new ListFollowsAdapter(getActivity(), app.followers, followOrFollowing);
+    } else {
+      adapter = new ListFollowsAdapter(getActivity(), app.followings, followOrFollowing);
+    }
     userId = (String) getArguments().getSerializable("userid");
     registerBroadcastReceiver();
 
@@ -82,6 +86,7 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     View view = inflater.inflate(R.layout.fragment_follow, parent, false);
     noFollowsMessage = (TextView) view.findViewById(R.id.noFollowMessage);
     listView = (ListView) view.findViewById(R.id.followList);
+    listView.setAdapter(adapter);
     listView.setOnItemClickListener(this);
     mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.tweet_swipe_refresh_layout);
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -131,15 +136,16 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
   public class GetFollows implements Callback<List<Follow>> {
     @Override
     public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
-      follows = response.body();
       if (followOrFollowing.equals("follower")) {
         app.followers = response.body();
+        adapter = new ListFollowsAdapter(getActivity(), app.followers, followOrFollowing);
+        saveFollowers(getActivity(), response.body());
       } else {
         app.followings = response.body();
       }
       if (mSwipeRefreshLayout != null)
         mSwipeRefreshLayout.setRefreshing(false);
-      adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
+
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
       setNoTweetMessage();

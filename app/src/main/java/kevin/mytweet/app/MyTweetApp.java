@@ -8,9 +8,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +22,7 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.loadFollowers;
 import static kevin.mytweet.helpers.SaveLoadHelper.loadTimeLine;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
@@ -67,6 +65,7 @@ public class MyTweetApp extends Application implements Callback<Token> {
     tweetServiceOpen = RetrofitServiceFactory.createService(MyTweetServiceOpen.class);
     if (!isOnline()) {
       timeLine = loadTimeLine(this);
+      followers = loadFollowers(this);
     } else {
       sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
     }

@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.Token;
 import kevin.mytweet.models.Tweet;
 
@@ -28,6 +29,8 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 public class SaveLoadHelper {
   private static final String FILE_TOKEN = "token.json";
   private static final String FILE_TIMELINE = "timeline.json";
+  private static final String FILE_FOLLOWERS = "followers.json";
+  private static final String FILE_FOLLOWINGS = "followings.json";
 
   /**
    * Uses GSon and output stream to write the current list of users to a json file
@@ -54,6 +57,14 @@ public class SaveLoadHelper {
 
   public static List<Tweet> loadTimeLine(Context context) {
     return new Gson().fromJson(readFromFile(context, FILE_TIMELINE), new TypeToken<List<Tweet>>() {}.getType());
+  }
+
+  public static void saveFollowers(Context context, List<Follow> followers) {
+    writeToFile(context, new GsonBuilder().create().toJson(followers), FILE_FOLLOWERS);
+  }
+
+  public static List<Follow> loadFollowers(Context context) {
+    return new Gson().fromJson(readFromFile(context, FILE_FOLLOWERS), new TypeToken<List<Follow>>() {}.getType());
   }
 
   private static String readFromFile(Context context, String fileName) {
