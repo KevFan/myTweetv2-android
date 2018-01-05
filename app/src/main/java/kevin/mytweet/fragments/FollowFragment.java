@@ -127,11 +127,16 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     Follow follow = adapter.follows.get(position);
-    if (followOrFollowing.equals("follower")) {
-      startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.follower._id);
+    if (app.isOnline()) {
+      if (followOrFollowing.equals("follower")) {
+        startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.follower._id);
+      } else {
+        startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.following._id);
+      }
     } else {
-      startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.following._id);
+      toastMessage(getActivity(), "Make sure your online to view user profiles!!");
     }
+
   }
 
   public class GetFollows implements Callback<List<Follow>> {
