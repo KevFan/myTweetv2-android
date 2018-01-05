@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -77,67 +76,14 @@ public class HomeActivity extends AppCompatActivity
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_name)).setText(currentUser.firstName + ' ' + currentUser.lastName);
     ((TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_email)).setText(currentUser.email);
     profilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
-    profilePhoto.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        // https://stackoverflow.com/questions/16389581/android-create-a-popup-that-has-multiple-selection-options
-        CharSequence colors[] = new CharSequence[]{"Update Profile Picture", "Delete Profile Picture"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-        builder.setTitle("Profile Picture Options");
-        builder.setItems(colors, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            if (which == 0) {
-              drawer.closeDrawer(GravityCompat.START);
-              checkExternalStorageReadPermission();
-            } else {
-              drawer.closeDrawer(GravityCompat.START);
-              Call<User> call = (Call<User>) app.tweetService.deleteProfilePicture(currentUser._id);
-              call.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                  currentUser = response.body();
-                  profilePhoto.setImageResource(R.mipmap.ic_launcher_round);
-                  toastMessage(HomeActivity.this, "Profile photo deleted");
-                }
-
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                  toastMessage(HomeActivity.this, "Failed to delete profile photo");
-                  info(t.toString());
-                }
-              });
-            }
-          }
-        });
-        builder.show();
-      }
-    });
+    profilePhoto.setOnClickListener(ProfilePhotoListener);
 
     if (!currentUser.image.equals("")) {
       Picasso.with(this).load(currentUser.image).into(profilePhoto);
     }
-    Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowings(app.currentUser._id);
-    call.enqueue(new Callback<List<Follow>>() {
-      @Override
-      public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
-        app.followings = response.body();
-        info("Home Activity: Got Followings");
-      }
 
-      @Override
-      public void onFailure(Call<List<Follow>> call, Throwable t) {
-        info(t.toString());
-        info("Home Activity: Failed to get Followings");
-      }
-    });
-
-//     Set home view to timeline fragment
-    FragmentManager manager = getSupportFragmentManager();
-    Fragment fragment = new ProfileFragment();
-    setUserIdToFragment(fragment, currentUser._id);
-    manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+    getFollowingList();
+    setToHomeView();
   }
 
   @Override
@@ -150,28 +96,6 @@ public class HomeActivity extends AppCompatActivity
     }
   }
 
-//  @Override
-//  public boolean onCreateOptionsMenu(Menu menu) {
-//    // Inflate the menu; this adds items to the action bar if it is present.
-//    getMenuInflater().inflate(R.menu.home, menu);
-//    return true;
-//  }
-//
-//  @Override
-//  public boolean onOptionsItemSelected(MenuItem item) {
-//    // Handle action bar item clicks here. The action bar will
-//    // automatically handle clicks on the Home/Up button, so long
-//    // as you specify a parent activity in AndroidManifest.xml.
-//    int id = item.getItemId();
-//
-//    //noinspection SimplifiableIfStatement
-//    if (id == R.id.action_settings) {
-//      return true;
-//    }
-//
-//    return super.onOptionsItemSelected(item);
-//  }
-
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
@@ -180,10 +104,7 @@ public class HomeActivity extends AppCompatActivity
     FragmentManager manager = getSupportFragmentManager();
 
     if (id == R.id.nav_home) {
-      Fragment fragment = new ProfileFragment();
-      setUserIdToFragment(fragment, currentUser._id);
-      manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
-      toastMessage(this, "Nav Home Selected");
+      setToHomeView();
     } else if (id == R.id.nav_global_timeline) {
       Fragment fragment = new GlobalTimeLineFragment();
       setUserIdToFragment(fragment, currentUser._id);
@@ -290,5 +211,67 @@ public class HomeActivity extends AppCompatActivity
     Bundle args = new Bundle();
     args.putSerializable("userid", userId);
     fragment.setArguments(args);
+  }
+
+  private void setToHomeView() {
+    FragmentManager manager = getSupportFragmentManager();
+    Fragment fragment = new ProfileFragment();
+    setUserIdToFragment(fragment, currentUser._id);
+    manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
+  }
+
+  private View.OnClickListener ProfilePhotoListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      // https://stackoverflow.com/questions/16389581/android-create-a-popup-that-has-multiple-selection-options
+      CharSequence colors[] = new CharSequence[]{"Update Profile Picture", "Delete Profile Picture"};
+
+      AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+      builder.setTitle("Profile Picture Options");
+      builder.setItems(colors, new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          if (which == 0) {
+            drawer.closeDrawer(GravityCompat.START);
+            checkExternalStorageReadPermission();
+          } else {
+            drawer.closeDrawer(GravityCompat.START);
+            Call<User> call = (Call<User>) app.tweetService.deleteProfilePicture(currentUser._id);
+            call.enqueue(new Callback<User>() {
+              @Override
+              public void onResponse(Call<User> call, Response<User> response) {
+                currentUser = response.body();
+                profilePhoto.setImageResource(R.mipmap.ic_launcher_round);
+                toastMessage(HomeActivity.this, "Profile photo deleted");
+              }
+
+              @Override
+              public void onFailure(Call<User> call, Throwable t) {
+                toastMessage(HomeActivity.this, "Failed to delete profile photo");
+                info(t.toString());
+              }
+            });
+          }
+        }
+      });
+      builder.show();
+    }
+  };
+
+  private void getFollowingList() {
+    Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowings(app.currentUser._id);
+    call.enqueue(new Callback<List<Follow>>() {
+      @Override
+      public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
+        app.followings = response.body();
+        info("Home Activity: Got Followings");
+      }
+
+      @Override
+      public void onFailure(Call<List<Follow>> call, Throwable t) {
+        info(t.toString());
+        info("Home Activity: Failed to get Followings");
+      }
+    });
   }
 }
