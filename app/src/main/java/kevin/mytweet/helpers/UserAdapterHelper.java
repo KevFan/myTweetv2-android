@@ -38,8 +38,9 @@ public class UserAdapterHelper {
       }
     }
     followSwitch.setOnCheckedChangeListener(new FollowUnfollowListener(user));
-    if (user._id.equals(MyTweetApp.getApp().currentUser._id)) {
-      followSwitch.setVisibility(View.INVISIBLE);
-    }
+    // TODO: Causes the switch to stay invisible for filter results ending in same position :/
+//    if (user._id.equals(MyTweetApp.getApp().currentUser._id)) {
+//      followSwitch.setVisibility(View.INVISIBLE);
+//    }
   }
 }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ import static kevin.mytweet.helpers.UserAdapterHelper.setDetails;
 /**
  * Custom adaptor for the timeline fragment to list tweets
  */
-public class ListUserAdapter extends ArrayAdapter<User> {
+public class ListUserAdapter extends ArrayAdapter<User> implements Filterable {
   private Context context;
   public List<User> users;
   public MyTweetApp app = MyTweetApp.getApp();
