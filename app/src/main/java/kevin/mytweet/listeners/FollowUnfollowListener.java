@@ -44,11 +44,13 @@ public class FollowUnfollowListener implements CompoundButton.OnCheckedChangeLis
   @Override
   public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
     // If is checked - make call to follow user
-    if (isChecked) {
-      followUser();
-    } else {
-      // Else make call to unfollow user
-      unFollowUser();
+    if (!app.currentUser._id.equals(user._id)) {
+      if (isChecked) {
+        followUser();
+      } else {
+        // Else make call to unfollow user
+        unFollowUser();
+      }
     }
   }
 
