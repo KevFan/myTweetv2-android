@@ -1,4 +1,4 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.tweet;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import kevin.mytweet.R;
 import kevin.mytweet.models.Tweet;
@@ -26,7 +29,9 @@ public class DetailTweetFragment extends BaseTweetFragment implements View.OnCli
 
   private TextView detailCharCount;
   private TextView detailTweetDate;
+  private TextView detailTweetUserName;
   private EditText detailTweetText;
+  private ImageView detailTweetImage;
 
   /**
    * Called when fragment is first created
@@ -38,8 +43,8 @@ public class DetailTweetFragment extends BaseTweetFragment implements View.OnCli
     info("Detail Tweet Fragment created");
     super.onCreate(savedInstanceState);
 
-    Long tweetId = (Long) getArguments().getSerializable(EXTRA_TWEET_ID);
-    tweet = timeLine.getTweet(tweetId);
+    String tweetId = (String) getArguments().getSerializable(EXTRA_TWEET_ID);
+    tweet = app.getTweet(tweetId);
   }
 
   /**
@@ -57,6 +62,8 @@ public class DetailTweetFragment extends BaseTweetFragment implements View.OnCli
     detailCharCount = (TextView) view.findViewById(R.id.detailCharCount);
     detailTweetDate = (TextView) view.findViewById(R.id.detailTweetDate);
     detailTweetText = (EditText) view.findViewById(R.id.detailTweetText);
+    detailTweetUserName = (TextView) view.findViewById(R.id.detailTweetUserName);
+    detailTweetImage = (ImageView) view.findViewById(R.id.detailTweetImage);
     updateView(tweet);
     setListeners(view);
     // Set BaseTweetFragment buttonId to detailSelectContactButton R id to get correct button
@@ -73,9 +80,13 @@ public class DetailTweetFragment extends BaseTweetFragment implements View.OnCli
    * @param tweet Tweet to update views with
    */
   public void updateView(Tweet tweet) {
-    detailCharCount.setText(String.valueOf(140 - tweet.tweetMessage.length()));
+    detailCharCount.setText(String.valueOf(140 - tweet.tweetText.length()));
     detailTweetDate.setText(tweet.tweetDate.toString());
-    detailTweetText.setText(tweet.tweetMessage);
+    detailTweetText.setText(tweet.tweetText);
+    detailTweetUserName.setText(tweet.tweetUser.firstName + " " + tweet.tweetUser.lastName);
+    if (!tweet.tweetImage.isEmpty()) {
+      Picasso.with(getActivity()).load(tweet.tweetImage).into(detailTweetImage);
+    }
   }
 
   /**

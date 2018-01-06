@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <EditTextPreference
+        android:key="userName"
+        android:summary="@string/userNameSummary"
+        android:title="@string/userName"/>
+
+    <EditTextPreference
+        android:key="@string/refresh_interval_preference_key"
+        android:summary="@string/refreshSummary"
+        android:title="@string/refresh"/>
+</PreferenceScreen>

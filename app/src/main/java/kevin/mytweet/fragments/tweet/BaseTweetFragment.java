@@ -1,4 +1,4 @@
-package kevin.mytweet.fragments;
+package kevin.mytweet.fragments.tweet;
 
 import android.Manifest;
 import android.app.Activity;
@@ -10,12 +10,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.Button;
 
+import java.util.List;
+
+import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.models.TimeLine;
 import kevin.mytweet.models.Tweet;
 
 import static kevin.mytweet.helpers.ContactHelper.getContact;
 import static kevin.mytweet.helpers.ContactHelper.getEmail;
+import static kevin.mytweet.helpers.ContactHelper.sendEmail;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**
@@ -27,7 +30,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
 public class BaseTweetFragment extends Fragment {
   protected static final int REQUEST_CONTACT = 1;
 
-  protected TimeLine timeLine;
+  protected List<Tweet> timeLine;
   protected MyTweetApp app;
   protected Tweet tweet;
   protected Intent data;
@@ -44,7 +47,7 @@ public class BaseTweetFragment extends Fragment {
     info("Base Tweet Fragment created");
     super.onCreate(savedInstanceState);
     app = MyTweetApp.getApp();
-    timeLine = app.currentUser.timeLine;
+    timeLine = app.timeLine;
   }
 
   /**
@@ -89,8 +92,7 @@ public class BaseTweetFragment extends Fragment {
     if (ContextCompat.checkSelfPermission(getActivity(),
         Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
       //We can request the permission.
-      ActivityCompat.requestPermissions(getActivity(),
-          new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACT);
+      requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACT);
     } else {
       //We already have permission, so go head and read the contact
       readContact();

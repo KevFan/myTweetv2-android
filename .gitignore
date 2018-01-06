@@ -27,3 +27,6 @@ Thumbs.db
 .idea
 .gradle
 /build/
+
+google-services.json
+keys.xml

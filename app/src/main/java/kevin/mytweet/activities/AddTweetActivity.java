@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
 
 import kevin.mytweet.R;
-import kevin.mytweet.fragments.AddTweetFragment;
+import kevin.mytweet.fragments.tweet.AddTweetFragment;
 
 import static kevin.mytweet.helpers.IntentHelper.navigateUp;
 import static kevin.mytweet.helpers.MessageHelpers.dialogBox;
@@ -77,5 +77,20 @@ public class AddTweetActivity extends BaseActivity {
             AddTweetActivity.super.onBackPressed();
           }
         });
+  }
+
+  /**
+   * https://stackoverflow.com/questions/35989288/onrequestpermissionsresult-not-being-called-in-fragment-if-defined-in-both-fragm
+   * Called after asking for permissions
+   * https://developer.android.com/training/permissions/requesting.html
+   *
+   * @param requestCode  Request code passed in by requestPermissions
+   * @param permissions  requested permissions
+   * @param grantResults result of granting permissions
+   */
+  @Override
+  public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                         int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 }
