@@ -1,6 +1,5 @@
 package kevin.mytweet.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +23,7 @@ public class Login extends BaseActivity {
 
   /**
    * Called when activity is first created
+   *
    * @param savedInstanceState Bundle with saved data if any
    */
   @Override
@@ -50,13 +50,7 @@ public class Login extends BaseActivity {
       String passwordString = password.getText().toString();
       if (emailString.isEmpty() || passwordString.isEmpty()) {
         toastMessage(view.getContext(), "Fill in all information to sign in !!");
-      }
-//      else if (app.validUser(emailString, passwordString)) {
-//        startActivity(new Intent(view.getContext(), HomeActivity.class));
-//        toastMessage(view.getContext(), "Login Successful !!");
-//      }
-      else {
-//        toastMessage(view.getContext(), "Email/Password incorrect !!");
+      } else {
         app.validUser(emailString, passwordString);
       }
     }

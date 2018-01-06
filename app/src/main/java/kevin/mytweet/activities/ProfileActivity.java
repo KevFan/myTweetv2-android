@@ -6,19 +6,19 @@ import android.support.v4.app.FragmentManager;
 
 import kevin.mytweet.R;
 import kevin.mytweet.fragments.ProfileFragment;
-import kevin.mytweet.fragments.tweet.AddTweetFragment;
 
 import static kevin.mytweet.activities.HomeActivity.setUserIdToFragment;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 /**
+ * Profile activity that is used when viewing another user's profile - used with Profile Fragment
  * Created by kevin on 29/12/2017.
  */
 
 public class ProfileActivity extends BaseActivity {
   /**
    * Called when activity is first created
-   * Creates the add tweet fragment if savedInstanceState is null
+   * Creates the profile fragment if savedInstanceState is null
    *
    * @param savedInstanceState Bundle with saved data if any
    */

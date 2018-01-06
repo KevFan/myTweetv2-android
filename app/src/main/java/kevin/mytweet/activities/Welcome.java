@@ -1,22 +1,16 @@
 package kevin.mytweet.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-
-import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.app.MyTweetService;
 import kevin.mytweet.app.RetrofitServiceFactory;
 import kevin.mytweet.models.Token;
-import kevin.mytweet.models.User;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
@@ -31,6 +25,7 @@ public class Welcome extends AppCompatActivity implements View.OnClickListener {
 
   /**
    * Called when activity is first created
+   *
    * @param savedInstanceState Bundle with saved data if any
    */
   @Override
@@ -38,6 +33,7 @@ public class Welcome extends AppCompatActivity implements View.OnClickListener {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_welcome);
 
+    // Load token - and if valid start Home activity instead to not require user to login again
     Token token = loadToken(this);
     if (token != null) {
       info("Got valid saved token");
@@ -57,6 +53,7 @@ public class Welcome extends AppCompatActivity implements View.OnClickListener {
 
   /**
    * On click listener for the login and sign up buttons in view
+   *
    * @param view View to listen to
    */
   @Override

@@ -49,6 +49,10 @@ import static kevin.mytweet.helpers.PictureHelper.getRealPathFromURI_API19;
 import static kevin.mytweet.helpers.PictureHelper.setGetPictureIntent;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 
+/**
+ * Home Activity to serve as the main activity after the signed up
+ * Allows the user to navigate to other fragments/activities by navigation drawer
+ */
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -57,6 +61,12 @@ public class HomeActivity extends AppCompatActivity
   public ImageView profilePhoto;
   private DrawerLayout drawer;
 
+  /**
+   * Called when activity is first created
+   * Creates the add tweet fragment if savedInstanceState is null
+   *
+   * @param savedInstanceState Bundle with saved data if any
+   */
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     info("Home Activity Stared");
@@ -78,6 +88,7 @@ public class HomeActivity extends AppCompatActivity
     profilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profilePhoto);
     profilePhoto.setOnClickListener(ProfilePhotoListener);
 
+    // Set current user image if any
     if (!currentUser.image.equals("")) {
       Picasso.with(this).load(currentUser.image).into(profilePhoto);
     }
@@ -86,6 +97,9 @@ public class HomeActivity extends AppCompatActivity
     setToHomeView();
   }
 
+  /**
+   * Override on back pressed to close drawer if open
+   */
   @Override
   public void onBackPressed() {
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -96,6 +110,13 @@ public class HomeActivity extends AppCompatActivity
     }
   }
 
+  /**
+   * Navigation drawer on item selection that navigates to other activities / fragments depending
+   * on the item the user selects
+   *
+   * @param item Menu item selected by the user
+   * @return Boolean of the selection result
+   */
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
@@ -135,6 +156,14 @@ public class HomeActivity extends AppCompatActivity
     return true;
   }
 
+  /**
+   * Overides on activity result - Used after getting a profile picture from the select picture
+   * intent and uploads and updates the current user's profile picture
+   *
+   * @param requestCode Request code for picture selection
+   * @param resultCode  Result code
+   * @param data        Data of the intent result
+   */
   // TODO: Should use async task for image upload - currently will give timeout if image is large
   // https://stackoverflow.com/questions/39953457/how-to-upload-image-file-in-retrofit-2
   @Override
@@ -165,7 +194,8 @@ public class HomeActivity extends AppCompatActivity
   }
 
   /**
-   * Check for permission to read contacts
+   * Check for permission to read storage permission for picture selection
+   * Ask for permission if don't have permission, otherwise select photo
    * https://developer.android.com/training/permissions/requesting.html
    */
   private void checkExternalStorageReadPermission() {
@@ -182,7 +212,8 @@ public class HomeActivity extends AppCompatActivity
   }
 
   /**
-   * Called after asking for permissions
+   * Called after asking for permissions - Used for checking was external storage read permission
+   * was granted for picture selection
    * https://developer.android.com/training/permissions/requesting.html
    *
    * @param requestCode  Request code passed in by requestPermissions
@@ -203,16 +234,30 @@ public class HomeActivity extends AppCompatActivity
     }
   }
 
+  /**
+   * Call the helper setGetPictureIntent to set intent to get a picture and starts activity for
+   * result
+   */
   public void selectImage() {
     startActivityForResult(Intent.createChooser(setGetPictureIntent(), "Select Picture"), PICK_IMAGE);
   }
 
+  /**
+   * Helper to get userId string to fragment to pass userId as argument to fragment
+   *
+   * @param fragment Fragment to pass userId to
+   * @param userId   String of userId
+   */
   public static void setUserIdToFragment(Fragment fragment, String userId) {
     Bundle args = new Bundle();
     args.putSerializable("userid", userId);
     fragment.setArguments(args);
   }
 
+  /**
+   * Helper to set return to home view by replacing the current home frame container with the
+   * profile fragment of the current user
+   */
   private void setToHomeView() {
     FragmentManager manager = getSupportFragmentManager();
     Fragment fragment = new ProfileFragment();
@@ -220,6 +265,10 @@ public class HomeActivity extends AppCompatActivity
     manager.beginTransaction().replace(R.id.homeFrame, fragment).commit();
   }
 
+  /**
+   * Private on click listener for the user profile picture
+   * Gives a dialog to the user to either update profile photo or delete profile photo
+   */
   private View.OnClickListener ProfilePhotoListener = new View.OnClickListener() {
     @Override
     public void onClick(View v) {
@@ -231,11 +280,13 @@ public class HomeActivity extends AppCompatActivity
       builder.setItems(colors, new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
+          drawer.closeDrawer(GravityCompat.START);
           if (which == 0) {
-            drawer.closeDrawer(GravityCompat.START);
+            // User selection update profile photo - Check read external storage permission first
             checkExternalStorageReadPermission();
           } else {
-            drawer.closeDrawer(GravityCompat.START);
+            // User selects delete profile picture - make call by retrofit for deletion and update
+            // profile picture to default
             Call<User> call = (Call<User>) app.tweetService.deleteProfilePicture(currentUser._id);
             call.enqueue(new Callback<User>() {
               @Override
@@ -258,6 +309,9 @@ public class HomeActivity extends AppCompatActivity
     }
   };
 
+  /**
+   * Helper method to make call to get user's following list
+   */
   private void getFollowingList() {
     Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowings(app.currentUser._id);
     call.enqueue(new Callback<List<Follow>>() {
