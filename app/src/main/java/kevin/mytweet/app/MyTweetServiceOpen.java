@@ -1,19 +1,13 @@
 package kevin.mytweet.app;
 
-import java.util.List;
-
 import kevin.mytweet.models.Token;
-import kevin.mytweet.models.Tweet;
 import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Path;
 
 /**
+ * MyTweetService API call to routes that are open and don't require JWT authentication
  * Created by kevin on 24/11/2017.
  */
 

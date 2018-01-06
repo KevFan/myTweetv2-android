@@ -7,10 +7,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Retrofit.Builder;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
+ * Retrofit Service Factory to built services based on whether service requires JWT headers or not
  * Created by kevin on 24/12/2017.
  */
 
