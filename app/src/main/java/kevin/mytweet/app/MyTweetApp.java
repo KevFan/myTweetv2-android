@@ -35,7 +35,6 @@ import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 public class MyTweetApp extends Application implements Callback<Token> {
   public MyTweetService tweetService;
   public MyTweetServiceOpen tweetServiceOpen;
-  public boolean tweetServiceAvailable = false;
   public List<User> users = new ArrayList<>();
   public List<Follow> followers = new ArrayList<>();
   public List<Follow> followings = new ArrayList<>();

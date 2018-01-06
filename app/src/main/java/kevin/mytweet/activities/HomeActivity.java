@@ -130,9 +130,7 @@ public class HomeActivity extends AppCompatActivity
       Fragment fragment = new GlobalTimeLineFragment();
       setUserIdToFragment(fragment, currentUser._id);
       manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
-      toastMessage(this, "Nav TimeLine Selected");
     } else if (id == R.id.nav_preferences) {
-      toastMessage(this, "Nav Settings Selected");
       startActivity(new Intent(this, PreferenceActivity.class));
     } else if (id == R.id.nav_settings) {
       Fragment fragment = new UpdateAccountFragment();
@@ -141,7 +139,6 @@ public class HomeActivity extends AppCompatActivity
       Fragment fragment = new SearchFragment();
       manager.beginTransaction().replace(R.id.homeFrame, fragment).addToBackStack(null).commit();
     } else if (id == R.id.nav_signout) {
-      //        clearPreferenceSettings();
       info("Signing out - clearing back stack & token");
       saveToken(this, null); // Save null token to that current token would be cleared
       startActivity(new Intent(this, Welcome.class)
@@ -164,7 +161,7 @@ public class HomeActivity extends AppCompatActivity
    * @param resultCode  Result code
    * @param data        Data of the intent result
    */
-  // TODO: Should use async task for image upload - currently will give timeout if image is large
+  // TODO: Should use async task for image upload - currently may give timeout if image is large
   // https://stackoverflow.com/questions/39953457/how-to-upload-image-file-in-retrofit-2
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {

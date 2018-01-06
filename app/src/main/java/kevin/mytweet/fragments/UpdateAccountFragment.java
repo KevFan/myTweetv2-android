@@ -54,7 +54,6 @@ public class UpdateAccountFragment extends Fragment implements Callback<User> {
     updateButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        toastMessage(getActivity(), "Update Button Pressed");
         Call<User> call = (Call<User>) app.tweetService.updateUser(app.currentUser._id,
             new User(firstName.getText().toString(), lastName.getText().toString()
                 , email.getText().toString(), password.getText().toString()));

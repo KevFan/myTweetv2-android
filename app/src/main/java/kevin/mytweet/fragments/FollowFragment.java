@@ -175,14 +175,14 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
       setNoFollowMessage();
-      toastMessage(getActivity(), "Got all " + followOrFollowing + "!!");
+      info("Got all " + followOrFollowing + "!!");
     }
 
     @Override
     public void onFailure(Call<List<Follow>> call, Throwable t) {
       info(t.toString());
       mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed to get all " + followOrFollowing + " :(");
+      info("Failed to get all " + followOrFollowing + " :(");
     }
   }
 

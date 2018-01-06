@@ -13,7 +13,6 @@ import kevin.mytweet.app.RetrofitServiceFactory;
 import kevin.mytweet.models.Token;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
-import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.SaveLoadHelper.loadToken;
 
 /**
@@ -66,7 +65,7 @@ public class Welcome extends AppCompatActivity implements View.OnClickListener {
         startActivity(new Intent(this, Login.class));
         break;
       default:
-        toastMessage(this, "Welcome - Something is wrong :/ ");
+        info("Welcome - Something is wrong :/ ");
         break;
     }
   }

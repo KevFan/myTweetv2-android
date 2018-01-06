@@ -153,14 +153,13 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
       if (mSwipeRefreshLayout != null)
         mSwipeRefreshLayout.setRefreshing(false);
       updateTimeLineData(response.body());
-      toastMessage(getActivity(), "Successfully got all user tweets");
+      info("Successfully got all user tweets");
     }
 
     @Override
     public void onFailure(Call<List<Tweet>> call, Throwable t) {
-      app.tweetServiceAvailable = false;
       mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed getting all user tweets :(");
+      toastMessage(getActivity(), "Ensure your connected online!!");
     }
   }
 }

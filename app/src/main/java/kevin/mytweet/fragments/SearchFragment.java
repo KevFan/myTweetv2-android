@@ -157,14 +157,14 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
       filter = new UserFilter(users, adapter);
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
-      toastMessage(getActivity(), "Got all users !!");
+      info("Search - Got all users !!");
     }
 
     @Override
     public void onFailure(Call<List<User>> call, Throwable t) {
       info(t.toString());
       mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed to get all users :(");
+      info("Failed to get all users :(");
     }
   }
 }

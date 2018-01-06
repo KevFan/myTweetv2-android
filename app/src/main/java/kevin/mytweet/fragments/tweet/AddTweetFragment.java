@@ -159,7 +159,6 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
             call = (Call<Tweet>) app.tweetService.createTweetWithPicture(tweetText, tweetDate, body, tweet.marker);
           }
           call.enqueue(this);
-          toastMessage(getActivity(), "Message Sent !! ");
         }
         break;
       case R.id.selectContactButton:
@@ -170,7 +169,6 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
         sendEmail(getActivity(), emailAddress, getString(R.string.tweet_report_title), tweet.getTweetReport());
         break;
       case R.id.selectImageButton:
-        toastMessage(getActivity(), "select image button pressed");
         checkExternalStorageReadPermission();
         break;
       default:
