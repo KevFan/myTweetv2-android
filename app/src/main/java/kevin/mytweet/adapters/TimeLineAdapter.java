@@ -13,12 +13,14 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import kevin.mytweet.R;
+import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Tweet;
 
 /**
  * Custom adaptor for the timeline fragment to list tweets
  */
 public class TimeLineAdapter extends ArrayAdapter<Tweet> {
+  private boolean isActionMode;
   private Context context;
   public List<Tweet> timeLine;
 
@@ -32,6 +34,7 @@ public class TimeLineAdapter extends ArrayAdapter<Tweet> {
     super(context, 0, tweets);
     this.context = context;
     this.timeLine = tweets;
+    this.isActionMode = false;
   }
 
   /**
@@ -79,5 +82,25 @@ public class TimeLineAdapter extends ArrayAdapter<Tweet> {
   @Override
   public int getCount() {
     return timeLine.size();
+  }
+
+  //https://stackoverflow.com/questions/14446249/enable-disable-item-selection-at-listview-in-multiple-choice-mode
+  @Override
+  public boolean isEnabled(int position) {
+    if (this.isActionMode) {
+      Tweet tweet = this.getItem(position);
+      if (tweet.tweetUser._id.equals(MyTweetApp.getApp().currentUser._id)) {
+        //only enable items that are not inside the basket
+        return true;
+      }
+      //all other items are disabled during actionmode
+      return false;
+    }
+    //no actionmode = everything enabled
+    return true;
+  }
+
+  public void setActionMode(boolean isActionMode) {
+    this.isActionMode = isActionMode;
   }
 }

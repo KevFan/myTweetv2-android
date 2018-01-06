@@ -155,6 +155,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
     MenuInflater inflater = actionMode.getMenuInflater();
     inflater.inflate(R.menu.delete_list_context, menu);
+    adapter.setActionMode(true);
     return true;
   }
 
@@ -198,18 +199,20 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   private void deleteTweet(ActionMode actionMode) {
     for (int i = adapter.getCount() - 1; i >= 0; i--) {
       if (listView.isItemChecked(i)) {
-        Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteTweet(adapter.timeLine.get(i)._id);
-        call2.enqueue(new Callback<Tweet>() {
-          @Override
-          public void onResponse(Call<Tweet> call, Response<Tweet> response) {
-            updateTimeLine();
-          }
+        if (adapter.getItem(i).tweetUser._id.equals(app.currentUser._id)) {
+          Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteTweet(adapter.timeLine.get(i)._id);
+          call2.enqueue(new Callback<Tweet>() {
+            @Override
+            public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+              updateTimeLine();
+            }
 
-          @Override
-          public void onFailure(Call<Tweet> call, Throwable t) {
-            toastMessage(getActivity(), "Tweet deletion failed");
-          }
-        });
+            @Override
+            public void onFailure(Call<Tweet> call, Throwable t) {
+              toastMessage(getActivity(), "Tweet deletion failed");
+            }
+          });
+        }
       }
     }
     actionMode.finish();
@@ -229,6 +232,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
    */
   @Override
   public void onDestroyActionMode(ActionMode actionMode) {
+    adapter.setActionMode(false);
   }
 
   /**
