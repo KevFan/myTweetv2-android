@@ -16,14 +16,26 @@ import retrofit2.Response;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
 
+/**
+ * Service to refresh user tweet list in app
+ */
 public class RefreshUserTweetsService extends IntentService {
   MyTweetApp app;
 
+  /**
+   * Constructor for RefreshUserTweetsService
+   */
   public RefreshUserTweetsService() {
     super("RefreshUserTweetsService");
     app = MyTweetApp.getApp();
   }
 
+  /**
+   * On intent - make the call to get the list of user tweets and update the user tweets list
+   * in app with response and send broadcast of update
+   *
+   * @param intent Intent to refresh user following list
+   */
   @Override
   protected void onHandleIntent(Intent intent) {
     Intent localIntent = new Intent(TimeLineFragment.BROADCAST_ACTION);
@@ -38,6 +50,9 @@ public class RefreshUserTweetsService extends IntentService {
     }
   }
 
+  /**
+   * On destroy of service
+   */
   @Override
   public void onDestroy() {
     super.onDestroy();
