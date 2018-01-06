@@ -79,12 +79,25 @@ public class TimeLineAdapter extends ArrayAdapter<Tweet> {
     return convertView;
   }
 
+  /**
+   * Return size of the timeline array list of tweets
+   *
+   * @return size of the timeline array list of tweets
+   */
   @Override
   public int getCount() {
     return timeLine.size();
   }
 
-  //https://stackoverflow.com/questions/14446249/enable-disable-item-selection-at-listview-in-multiple-choice-mode
+  /**
+   * Enable / Disable list item selection at position depending on whether action mode is selected
+   * Used to prevent selection of non current user tweets for deletion by multi select on current
+   * user timeline
+   * //https://stackoverflow.com/questions/14446249/enable-disable-item-selection-at-listview-in-multiple-choice-mode
+   *
+   * @param position Position of list item
+   * @return Boolean to enable or disable item for selection
+   */
   @Override
   public boolean isEnabled(int position) {
     if (this.isActionMode) {
@@ -100,6 +113,11 @@ public class TimeLineAdapter extends ArrayAdapter<Tweet> {
     return true;
   }
 
+  /**
+   * Method to set boolean of whether action mode is enabled or not
+   *
+   * @param isActionMode Boolean to set isActionMode boolean
+   */
   public void setActionMode(boolean isActionMode) {
     this.isActionMode = isActionMode;
   }

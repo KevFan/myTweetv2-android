@@ -11,6 +11,7 @@ import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.models.Tweet;
 
 /**
+ * Detail Tweet Pager activity adapter for horizontal paging
  * Created by kevin on 28/12/2017.
  */
 
