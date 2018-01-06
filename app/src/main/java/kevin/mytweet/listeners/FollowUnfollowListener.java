@@ -2,6 +2,10 @@ package kevin.mytweet.listeners;
 
 import android.widget.CompoundButton;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
@@ -35,6 +39,7 @@ public class FollowUnfollowListener implements CompoundButton.OnCheckedChangeLis
       call.enqueue(new Callback<Follow>() {
         @Override
         public void onResponse(Call<Follow> call, Response<Follow> response) {
+          app.followings.add(response.body());
           info("Following " + user.firstName);
         }
 
@@ -49,6 +54,13 @@ public class FollowUnfollowListener implements CompoundButton.OnCheckedChangeLis
       call.enqueue(new Callback<Follow>() {
         @Override
         public void onResponse(Call<Follow> call, Response<Follow> response) {
+          Iterator<Follow> iterator = app.followings.iterator();
+          while (iterator.hasNext()) {
+            Follow currentFollow = iterator.next();
+            if (currentFollow.following._id.equals(user._id)) {
+              iterator.remove();
+            }
+          }
           info("unfollowed " + user.firstName);
         }
 

@@ -1,32 +1,33 @@
 package kevin.mytweet.fragments.timeline;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import java.util.List;
 
 import kevin.mytweet.R;
-import kevin.mytweet.activities.Welcome;
 import kevin.mytweet.models.Tweet;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.widget.AbsListView;
-import android.view.ActionMode;
-
-import static kevin.mytweet.helpers.MessageHelpers.*;
+import static kevin.mytweet.helpers.MessageHelpers.dialogBox;
+import static kevin.mytweet.helpers.MessageHelpers.info;
+import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
  * TimeLine Fragment - lists the user tweets using list fragment and custom adapter
@@ -34,6 +35,9 @@ import static kevin.mytweet.helpers.MessageHelpers.*;
  */
 
 public class TimeLineFragment extends BaseTimeLineFragment implements AbsListView.MultiChoiceModeListener {
+
+  public static final String BROADCAST_ACTION = "kevin.mytweet.activities.TimeLineFragment";
+  private IntentFilter intentFilter;
 
   /**
    * Called when fragment is first created
@@ -44,6 +48,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   public void onCreate(Bundle savedInstanceState) {
     info("TweetLineFragement created");
     super.onCreate(savedInstanceState);
+    registerBroadcastReceiver();
   }
 
   /**
@@ -82,9 +87,6 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
               null, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                   // continue with delete
-//                  app.timeLine.clear();
-//                  app.save();
-//                  adapter.notifyDataSetChanged();
                   Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteAllUserTweet(app.currentUser._id);
                   call2.enqueue(new Callback<Tweet>() {
                     @Override
@@ -136,8 +138,8 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
 
   @Override
   public void updateTimeLine() {
-    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(app.currentUser._id);
-    call.enqueue(new GetAllUserTweets());
+    Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserFollowingTweets();
+    call.enqueue(new GetAllUserFollowingTweets());
   }
 
   /* ************ MultiChoiceModeListener methods (begin) *********** */
@@ -153,6 +155,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
     MenuInflater inflater = actionMode.getMenuInflater();
     inflater.inflate(R.menu.delete_list_context, menu);
+    adapter.setActionMode(true);
     return true;
   }
 
@@ -196,20 +199,20 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
   private void deleteTweet(ActionMode actionMode) {
     for (int i = adapter.getCount() - 1; i >= 0; i--) {
       if (listView.isItemChecked(i)) {
-//        app.deleteTweet(adapter.getItem(i));
-//        app.save();
-        Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteTweet(adapter.timeLine.get(i)._id);
-        call2.enqueue(new Callback<Tweet>() {
-          @Override
-          public void onResponse(Call<Tweet> call, Response<Tweet> response) {
-            updateTimeLine();
-          }
+        if (adapter.getItem(i).tweetUser._id.equals(app.currentUser._id)) {
+          Call<Tweet> call2 = (Call<Tweet>) app.tweetService.deleteTweet(adapter.timeLine.get(i)._id);
+          call2.enqueue(new Callback<Tweet>() {
+            @Override
+            public void onResponse(Call<Tweet> call, Response<Tweet> response) {
+              updateTimeLine();
+            }
 
-          @Override
-          public void onFailure(Call<Tweet> call, Throwable t) {
-            toastMessage(getActivity(), "Tweet deletion failed");
-          }
-        });
+            @Override
+            public void onFailure(Call<Tweet> call, Throwable t) {
+              toastMessage(getActivity(), "Tweet deletion failed");
+            }
+          });
+        }
       }
     }
     actionMode.finish();
@@ -229,6 +232,7 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
    */
   @Override
   public void onDestroyActionMode(ActionMode actionMode) {
+    adapter.setActionMode(false);
   }
 
   /**
@@ -254,4 +258,39 @@ public class TimeLineFragment extends BaseTimeLineFragment implements AbsListVie
 //    editor.putString("password", "");
 //    editor.apply();
 //  }
+
+  private void registerBroadcastReceiver() {
+    intentFilter = new IntentFilter(BROADCAST_ACTION);
+    ResponseReceiver responseReceiver = new ResponseReceiver();
+    // Registers the ResponseReceiver and its intent filters
+    LocalBroadcastManager.getInstance(getActivity()).registerReceiver(responseReceiver, intentFilter);
+  }
+
+  private class ResponseReceiver extends BroadcastReceiver {
+    //private void ResponseReceiver() {}
+    // Called when the BroadcastReceiver gets an Intent it's registered to receive
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      //refreshDonationList();
+      adapter.timeLine = app.timeLine;
+      adapter.notifyDataSetChanged();
+    }
+  }
+
+  public class GetAllUserFollowingTweets implements Callback<List<Tweet>> {
+    @Override
+    public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
+      if (mSwipeRefreshLayout != null)
+        mSwipeRefreshLayout.setRefreshing(false);
+      updateTimeLineData(response.body());
+      toastMessage(getActivity(), "Successfully got all user and following tweets");
+    }
+
+    @Override
+    public void onFailure(Call<List<Tweet>> call, Throwable t) {
+      app.tweetServiceAvailable = false;
+      mSwipeRefreshLayout.setRefreshing(false);
+      toastMessage(getActivity(), "Failed getting all user and following tweets :(");
+    }
+  }
 }

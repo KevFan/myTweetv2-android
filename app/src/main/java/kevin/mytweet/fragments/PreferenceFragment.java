@@ -1,16 +1,14 @@
 package kevin.mytweet.fragments;
 
-import android.os.Bundle;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import kevin.mytweet.R;
-import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.models.User;
+import kevin.mytweet.fragments.timeline.TimeLineFragment;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
-import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
-import static kevin.mytweet.helpers.ValidatorHelpers.*;
 
 /**
  * Settings Fragment
@@ -65,8 +63,12 @@ public class PreferenceFragment extends android.preference.PreferenceFragment
    */
   @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    User currentUser = MyTweetApp.getApp().currentUser;
     String keyValue = sharedPreferences.getString(key, "");
     info("Setting change - key : value = " + key + " : " + keyValue);
+    String refreshIntervalKey = getActivity().getResources().getString(R.string.refresh_interval_preference_key);
+    if (key.equals(refreshIntervalKey)) {
+      getActivity().sendBroadcast(new Intent(FollowFragment.BROADCAST_ACTION));
+      getActivity().sendBroadcast(new Intent(TimeLineFragment.BROADCAST_ACTION));
+    }
   }
 }

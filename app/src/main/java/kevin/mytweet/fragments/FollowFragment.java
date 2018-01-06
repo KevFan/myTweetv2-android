@@ -1,10 +1,12 @@
 package kevin.mytweet.fragments;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +27,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static kevin.mytweet.activities.HomeActivity.setUserIdToFragment;
 import static kevin.mytweet.helpers.IntentHelper.startActivityWithData;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveFollowers;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveFollowings;
 
 /**
  * FollowFragment Fragment - lists the user follows using custom adapter
@@ -37,10 +40,12 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 public class FollowFragment extends Fragment implements AdapterView.OnItemClickListener {
   public static final String EXTRA_FOLLOW = "FOLLOW_OR_FOLLOWING";
+  public static final String BROADCAST_ACTION = "kevin.mytweet.activities.FollowFragment";
+  private IntentFilter intentFilter;
+
 
   public TextView noFollowsMessage;
   public ListView listView;
-  public List<Follow> follows = new ArrayList<>();
   public MyTweetApp app = MyTweetApp.getApp();
   public ListFollowsAdapter adapter;
   public SwipeRefreshLayout mSwipeRefreshLayout;
@@ -58,8 +63,14 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     info("FollowFragment created");
     super.onCreate(savedInstanceState);
     followOrFollowing = (String) getArguments().getSerializable(EXTRA_FOLLOW);
-    adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
+    if (followOrFollowing.equals("follower")) {
+      adapter = new ListFollowsAdapter(getActivity(), app.followers, followOrFollowing);
+    } else {
+      adapter = new ListFollowsAdapter(getActivity(), app.followings, followOrFollowing);
+    }
     userId = (String) getArguments().getSerializable("userid");
+    registerBroadcastReceiver();
+
   }
 
   /**
@@ -76,6 +87,7 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     View view = inflater.inflate(R.layout.fragment_follow, parent, false);
     noFollowsMessage = (TextView) view.findViewById(R.id.noFollowMessage);
     listView = (ListView) view.findViewById(R.id.followList);
+    listView.setAdapter(adapter);
     listView.setOnItemClickListener(this);
     mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.tweet_swipe_refresh_layout);
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -115,25 +127,33 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     Follow follow = adapter.follows.get(position);
-    if (followOrFollowing.equals("follower")) {
-      startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.follower._id);
+    if (app.isOnline()) {
+      if (followOrFollowing.equals("follower")) {
+        startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.follower._id);
+      } else {
+        startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.following._id);
+      }
     } else {
-      startActivityWithData(getActivity(), ProfileActivity.class, "userid", follow.following._id);
+      toastMessage(getActivity(), "Make sure your online to view user profiles!!");
     }
+
   }
 
   public class GetFollows implements Callback<List<Follow>> {
     @Override
     public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
-      follows = response.body();
       if (followOrFollowing.equals("follower")) {
         app.followers = response.body();
+        adapter = new ListFollowsAdapter(getActivity(), app.followers, followOrFollowing);
+        saveFollowers(getActivity(), response.body());
       } else {
         app.followings = response.body();
+        adapter = new ListFollowsAdapter(getActivity(), app.followings, followOrFollowing);
+        saveFollowings(getActivity(), response.body());
       }
       if (mSwipeRefreshLayout != null)
         mSwipeRefreshLayout.setRefreshing(false);
-      adapter = new ListFollowsAdapter(getActivity(), follows, followOrFollowing);
+
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
       setNoTweetMessage();
@@ -145,6 +165,25 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
       info(t.toString());
       mSwipeRefreshLayout.setRefreshing(false);
       toastMessage(getActivity(), "Failed to get all " + followOrFollowing +" :(");
+    }
+  }
+
+  private void registerBroadcastReceiver() {
+    intentFilter = new IntentFilter(BROADCAST_ACTION);
+    ResponseReceiver responseReceiver = new ResponseReceiver();
+    // Registers the ResponseReceiver and its intent filters
+    LocalBroadcastManager.getInstance(getActivity()).registerReceiver(responseReceiver, intentFilter);
+  }
+
+  private class ResponseReceiver extends BroadcastReceiver {
+    //private void ResponseReceiver() {}
+    // Called when the BroadcastReceiver gets an Intent it's registered to receive
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (followOrFollowing.equals("following")) {
+        adapter.follows = app.followings;
+        adapter.notifyDataSetChanged();
+      }
     }
   }
 }

@@ -90,6 +90,18 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
+
+        <receiver android:name=".receivers.BootReceiver"
+                  android:exported="false">
+            <intent-filter >
+                <action android:name="kevin.mytweet.receivers.SEND_BROADCAST"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".services.RefreshUserTweetsService"
+                 android:exported="false"/>
+        <service android:name=".services.RefreshUserFollowingsService"
+                 android:exported="false"/>
     </application>
 
 </manifest>

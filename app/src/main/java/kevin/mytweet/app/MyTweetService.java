@@ -63,6 +63,9 @@ public interface MyTweetService {
   @DELETE("/api/tweets/users/{userid}")
   Call<Tweet> deleteAllUserTweet(@Path("userid") String id);
 
+  @GET("/api/tweets/following")
+  Call<List<Tweet>> getAllUserFollowingTweets();
+
   @GET("/api/follow/followers/{id}")
   Call<List<Follow>> getFollowers(@Path("id") String id);
 

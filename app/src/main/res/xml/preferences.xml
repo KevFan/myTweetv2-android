@@ -6,7 +6,7 @@
         android:title="@string/userName"/>
 
     <EditTextPreference
-        android:key="refresh"
+        android:key="@string/refresh_interval_preference_key"
         android:summary="@string/refreshSummary"
         android:title="@string/refresh"/>
 </PreferenceScreen>

@@ -28,6 +28,7 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
+import static kevin.mytweet.helpers.SaveLoadHelper.saveTweets;
 
 /**
  * Created by kevin on 24/11/2017.
@@ -108,6 +109,7 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
     listView.setAdapter(adapter);
     setNoTweetMessage();
     adapter.notifyDataSetChanged();
+    saveTweets(getActivity(), updatedTimeline);
   }
 
   /**
