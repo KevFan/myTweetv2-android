@@ -17,13 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.Date;
@@ -139,14 +137,15 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
         if (tweet.tweetText.equals("")) {
           toastMessage(getActivity(), "Write your message to send tweet");
         } else {
-//          app.addTweet(tweet);
-//          app.save();
+          // Set location to app location coordinates
           Call<Tweet> call;
           tweet.marker.coords.latitude = app.mCurrentLocation.getLatitude();
           tweet.marker.coords.longitude = app.mCurrentLocation.getLongitude();
+          // If no image file is selected
           if (imageFile == null) {
             call = (Call<Tweet>) app.tweetService.createTweet(tweet);
           } else {
+            // Otherwise create the form data to upload image and tweet data
             RequestBody requestFile =
                 RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
             MultipartBody.Part body =
@@ -212,6 +211,12 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
   }
 
+  /**
+   * On response of creating tweet
+   *
+   * @param call     Tweet call
+   * @param response Tweet Response
+   */
   @Override
   public void onResponse(Call<Tweet> call, Response<Tweet> response) {
     toastMessage(getActivity(), "Message saved !! ");
@@ -220,14 +225,28 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     getActivity().finish();
   }
 
+  /**
+   * On Failure of creating tweet
+   *
+   * @param call Tweet call
+   * @param t    Error
+   */
   @Override
   public void onFailure(Call<Tweet> call, Throwable t) {
     info(t.toString());
     toastMessage(getActivity(), "Message fail to save, please try again !! ");
   }
 
+  /**
+   * Overides on activity result - Used after getting a profile picture from the select picture
+   * intent and uploads and updates the current user's profile picture
+   * https://stackoverflow.com/questions/39953457/how-to-upload-image-file-in-retrofit-2
+   *
+   * @param requestCode Request code for picture selection
+   * @param resultCode  Result code
+   * @param data        Data of the intent result
+   */
   // TODO: Should use async task for image upload - currently will give timeout if image is large
-  // https://stackoverflow.com/questions/39953457/how-to-upload-image-file-in-retrofit-2
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == PICK_IMAGE) {
@@ -237,9 +256,9 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     }
   }
 
-
   /**
-   * Check for permission to read contacts
+   * Check for permission to read storage permission for picture selection
+   * Ask for permission if don't have permission, otherwise select photo
    * https://developer.android.com/training/permissions/requesting.html
    */
   private void checkExternalStorageReadPermission() {
@@ -256,7 +275,8 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
   }
 
   /**
-   * Called after asking for permissions
+   * Called after asking for permissions - Used for checking was external storage read permission
+   * was granted for picture selection
    * https://developer.android.com/training/permissions/requesting.html
    *
    * @param requestCode  Request code passed in by requestPermissions
@@ -275,18 +295,33 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
     }
   }
 
+  /**
+   * Call the helper setGetPictureIntent to set intent to get a picture and starts activity for
+   * result
+   */
   public void selectImage() {
     startActivityForResult(Intent.createChooser(setGetPictureIntent(), "Select Picture"), PICK_IMAGE);
   }
 
+  /**
+   * On Map Ready of Add Tweet Fragment to display current device location
+   *
+   * @param googleMap Google Map object
+   */
   @Override
   public void onMapReady(GoogleMap googleMap) {
     googleMap.clear();
     addTweets(app.timeLine, googleMap);
   }
 
-  public void addTweets(List<Tweet> list, GoogleMap googleMap){
-    for(Tweet tweet : list)
+  /**
+   * To display tweet markers to from current tweet listing onto map
+   *
+   * @param list      Tweet List
+   * @param googleMap Google map
+   */
+  public void addTweets(List<Tweet> list, GoogleMap googleMap) {
+    for (Tweet tweet : list)
       googleMap.addMarker(new MarkerOptions()
           .position(new LatLng(tweet.marker.coords.latitude, tweet.marker.coords.longitude))
           .title(tweet.tweetDate.toString())

@@ -31,6 +31,8 @@ import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 import static kevin.mytweet.helpers.SaveLoadHelper.saveTweets;
 
 /**
+ * Base TimeLine Fragment to hold common functionality and variables of TimeLineFragment and
+ * GlobalTimeLine Fragment
  * Created by kevin on 24/11/2017.
  */
 
@@ -95,6 +97,9 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
     return view;
   }
 
+  /**
+   * Set whether to display no tweet message or not
+   */
   public void setNoTweetMessage() {
     if (!adapter.timeLine.isEmpty()) {
       noTweetMessage.setVisibility(View.INVISIBLE);
@@ -103,6 +108,11 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
     }
   }
 
+  /**
+   * Helper method to update app time and adapter after retrieving data from the cloud
+   *
+   * @param updatedTimeline Updated List of Tweets
+   */
   public void updateTimeLineData(List<Tweet> updatedTimeline) {
     app.timeLine = updatedTimeline;
     adapter = new TimeLineAdapter(getActivity(), updatedTimeline);
@@ -133,8 +143,11 @@ public abstract class BaseTimeLineFragment extends Fragment implements AdapterVi
    */
   public abstract void updateTimeLine();
 
-  // Class to get all user tweets and update app timeline and adapter timeline
-  public class GetAllUserTweets implements Callback<List<Tweet>> {
+  /**
+   * Helper class to be used generically by extending classes to set swipe refresh to fail and
+   * call the updateTimeLineData method to update timeline and adapter data
+   */
+  public class UpdateTweetData implements Callback<List<Tweet>> {
     @Override
     public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
       if (mSwipeRefreshLayout != null)

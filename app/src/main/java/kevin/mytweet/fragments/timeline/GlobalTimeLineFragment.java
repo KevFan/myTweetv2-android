@@ -31,7 +31,9 @@ public class GlobalTimeLineFragment extends BaseTimeLineFragment {
   }
 
   /**
-   * Whenever the fragment is paused, check should the no tweets message be visible or not
+   * Whenever the fragment is paused, check should the no tweets message be visible or not,
+   * also set add tweet floating button to invisible if using the global timeline fragment to view
+   * another user's timeline
    */
   @Override
   public void onResume() {
@@ -43,14 +45,19 @@ public class GlobalTimeLineFragment extends BaseTimeLineFragment {
     updateTimeLine();
   }
 
+  /**
+   * Implement the abstract method from base time line. If the current user id passed, user viewing
+   * the global timeline fragment - get all tweets, else current user if using the global timeline
+   * fragment to view another user profile - get all user tweets associated with user id
+   */
   @Override
   public void updateTimeLine() {
     if (userId.equals(app.currentUser._id)) {
       Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllTweets();
-      call.enqueue(new GetAllUserTweets());
+      call.enqueue(new UpdateTweetData());
     } else {
       Call<List<Tweet>> call = (Call<List<Tweet>>) app.tweetService.getAllUserTweets(userId);
-      call.enqueue(new GetAllUserTweets());
+      call.enqueue(new UpdateTweetData());
     }
   }
 }

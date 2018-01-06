@@ -1,7 +1,7 @@
 package kevin.mytweet.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,29 +11,26 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
 import kevin.mytweet.activities.ProfileActivity;
-import kevin.mytweet.adapters.ListFollowsAdapter;
 import kevin.mytweet.adapters.ListUserAdapter;
 import kevin.mytweet.adapters.UserFilter;
 import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static kevin.mytweet.fragments.FollowFragment.EXTRA_FOLLOW;
 import static kevin.mytweet.helpers.IntentHelper.startActivityWithData;
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
 
 /**
+ * Search Fragment - used to filter through user list for searching based of user name
  * Created by kevin on 29/12/2017.
  */
 
@@ -85,18 +82,32 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
     return view;
   }
 
+  /**
+   * On resume of fragment - update user list
+   */
   @Override
   public void onResume() {
     super.onResume();
     updateUserList();
   }
 
+  /**
+   * Helper method to make call to get all user list
+   */
   public void updateUserList() {
     Call<List<User>> call = (Call<List<User>>) app.tweetService.getAllUsers();
     call.enqueue(new GetUsers());
-
   }
 
+  /**
+   * On item click listener for list view - get the user and pass the user id to start the profile
+   * activity to view user profile
+   *
+   * @param parent   Parent view
+   * @param view     View
+   * @param position Position of item
+   * @param id       Id of item
+   */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     User user = adapter.users.get(position);
@@ -104,21 +115,38 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
 
   }
 
+  /**
+   * Method stub to implement TextWatcher Listener interface - unused
+   */
+
   @Override
   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
   }
 
+  /**
+   * Called after text changed - calls the filter to filter user list results
+   *
+   * @param s      Character sequence
+   * @param start  start
+   * @param before before
+   * @param count  count
+   */
   @Override
   public void onTextChanged(CharSequence s, int start, int before, int count) {
     filter.filter(s);
   }
 
+  /**
+   * Method stub to implement TextWatcher Listener interface - unused
+   */
   @Override
   public void afterTextChanged(Editable s) {
 
   }
 
+  /**
+   * Helper class to get all users, update the user list, adapter and filter with new list
+   */
   public class GetUsers implements Callback<List<User>> {
     @Override
     public void onResponse(Call<List<User>> call, Response<List<User>> response) {

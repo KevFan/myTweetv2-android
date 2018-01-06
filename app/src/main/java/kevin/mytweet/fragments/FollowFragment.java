@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kevin.mytweet.R;
@@ -70,7 +69,6 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     }
     userId = (String) getArguments().getSerializable("userid");
     registerBroadcastReceiver();
-
   }
 
   /**
@@ -99,14 +97,20 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     return view;
   }
 
+  /**
+   * On resume update follow listing and set the no follow message
+   */
   @Override
   public void onResume() {
     super.onResume();
     updateFollowList();
-    setNoTweetMessage();
+    setNoFollowMessage();
   }
 
-  public void setNoTweetMessage() {
+  /**
+   * Display no follow message if follows array list is empty
+   */
+  public void setNoFollowMessage() {
     if (!adapter.follows.isEmpty()) {
       noFollowsMessage.setVisibility(View.INVISIBLE);
     } else {
@@ -114,6 +118,9 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     }
   }
 
+  /**
+   * Make call to update follow list depending of whether to get follower or following listing
+   */
   public void updateFollowList() {
     if (followOrFollowing.equals("follower")) {
       Call<List<Follow>> call = (Call<List<Follow>>) app.tweetService.getFollowers(userId);
@@ -124,6 +131,14 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     }
   }
 
+  /**
+   * On Item Click of Listing, start new profile activity passing the user id of either the follower
+   * or following listing to display profile of selected user
+   * @param parent   Adapter view
+   * @param view     view
+   * @param position position of view
+   * @param id       id
+   */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     Follow follow = adapter.follows.get(position);
@@ -139,6 +154,9 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
 
   }
 
+  /**
+   * Helper class to make call to get either the follower or following listing
+   */
   public class GetFollows implements Callback<List<Follow>> {
     @Override
     public void onResponse(Call<List<Follow>> call, Response<List<Follow>> response) {
@@ -156,7 +174,7 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
 
       listView.setAdapter(adapter);
       adapter.notifyDataSetChanged();
-      setNoTweetMessage();
+      setNoFollowMessage();
       toastMessage(getActivity(), "Got all " + followOrFollowing + "!!");
     }
 
@@ -164,10 +182,13 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     public void onFailure(Call<List<Follow>> call, Throwable t) {
       info(t.toString());
       mSwipeRefreshLayout.setRefreshing(false);
-      toastMessage(getActivity(), "Failed to get all " + followOrFollowing +" :(");
+      toastMessage(getActivity(), "Failed to get all " + followOrFollowing + " :(");
     }
   }
 
+  /**
+   * Register the broadcast receiver to get background updates
+   */
   private void registerBroadcastReceiver() {
     intentFilter = new IntentFilter(BROADCAST_ACTION);
     ResponseReceiver responseReceiver = new ResponseReceiver();
@@ -175,8 +196,10 @@ public class FollowFragment extends Fragment implements AdapterView.OnItemClickL
     LocalBroadcastManager.getInstance(getActivity()).registerReceiver(responseReceiver, intentFilter);
   }
 
+  /**
+   * On receive update the app following listing
+   */
   private class ResponseReceiver extends BroadcastReceiver {
-    //private void ResponseReceiver() {}
     // Called when the BroadcastReceiver gets an Intent it's registered to receive
     @Override
     public void onReceive(Context context, Intent intent) {
