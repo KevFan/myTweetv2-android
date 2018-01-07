@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 import kevin.mytweet.R;
@@ -59,7 +61,7 @@ public class TimeLineAdapter extends ArrayAdapter<Tweet> {
     tweetText.setMaxLines(1);
 
     TextView tweetDate = (TextView) convertView.findViewById(R.id.list_item_tweetDate);
-    tweetDate.setText(tweet.tweetDate.toString());
+    tweetDate.setText(dateString(tweet.tweetDate));
 
     TextView tweetUserName = (TextView) convertView.findViewById(R.id.list_item_tweetUserName);
     tweetUserName.setText(tweet.tweetUser.firstName + " " + tweet.tweetUser.lastName);
@@ -120,5 +122,15 @@ public class TimeLineAdapter extends ArrayAdapter<Tweet> {
    */
   public void setActionMode(boolean isActionMode) {
     this.isActionMode = isActionMode;
+  }
+
+  /**
+   * Private helper to format date string
+   * @param date Date to format
+   * @return String for formatted date
+   */
+  private String dateString(Date date) {
+    String dateFormat = "EEE d MMM yyyy H:mm";
+    return android.text.format.DateFormat.format(dateFormat, date).toString();
   }
 }
