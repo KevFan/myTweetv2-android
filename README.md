@@ -22,7 +22,7 @@ MyTweet 2 android is a continutation of the first Android assignment which provi
 The Android application aims to provide complete intregation with the web application equivalent. All actions completed by the user is also reflected on the web application. This is achieved by having the android communicate with the API of the web server application. 
 
 The web server application github can be found at: https://github.com/KevFan/myTweet2-ent-web
-with deployed server application at: <enter link>
+with deployed server application at: http://34.242.209.100/
 
 A client single page application for the web server can also be found at github: https://github.com/KevFan/mytweet2-aurelia-client-ts
 
@@ -37,7 +37,7 @@ A git branching model was used in this project. The project would contain two ma
 The github for the project can be found at the following link: 
 https://github.com/KevFan/myTweetv2-android
 
-### UX/DX
+## UX/DX
 The UX adopts an approach to use mainly the navigation drawer for navigation and available user actions. A profile fragment with a pager view is provided for listing of the user tweets, followers and followings, which also provide a profile activty for viewing of other user profiles. The UX aims to provide a common color scheme throughout the application and provide user interactions that are int
 
 The DX approach adopted aims to provide as few code duplications as possible. Fragments were used where possible to allow the fragments be reused where possible. The code itself is all commented for documentation and seperated into appropriate packages. 
@@ -45,7 +45,6 @@ The DX approach adopted aims to provide as few code duplications as possible. Fr
 ## List of Software + Technologies Used
 * [Android Studio](https://developer.android.com/studio/index.html) - IDE
 * [Gson](https://github.com/google/gson) - Persistence by Object to Json serialisation
-* [SonarLint](https://www.sonarlint.org/intellij/) - Java code analyser
 
 ## Authors:
 Kevin Fan ([KevFan](https://github.com/KevFan)) - 20077688
