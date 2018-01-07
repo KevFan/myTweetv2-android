@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -64,22 +65,20 @@
             android:id="@+id/tweetButton"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/border_button"
             android:drawablePadding="15dp"
             android:drawableStart="@drawable/ic_create_black_24dp"
             android:padding="10dp"
             android:text="@string/tweet"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tweetDate"/>
 
         <Button
             android:id="@+id/selectImageButton"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/border_button"
@@ -87,9 +86,7 @@
             android:drawableStart="@drawable/ic_image_black_24dp"
             android:padding="10dp"
             android:text="@string/selectImage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tweetButton"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tweetDate"/>
 
         <Button

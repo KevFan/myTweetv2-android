@@ -251,6 +251,8 @@ public class AddTweetFragment extends BaseTweetFragment implements View.OnClickL
       Uri selectedImage = data.getData();
       imageFile = new File(getRealPathFromURI_API19(getActivity(), selectedImage));
       tweetImage.setImageURI(selectedImage);
+    } else {
+      super.onActivityResult(requestCode, resultCode, data);
     }
   }
 

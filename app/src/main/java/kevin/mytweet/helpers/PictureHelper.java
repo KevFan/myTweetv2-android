@@ -15,7 +15,7 @@ import static kevin.mytweet.helpers.MessageHelpers.info;
  */
 
 public class PictureHelper {
-  public static final int PICK_IMAGE = 1;
+  public static final int PICK_IMAGE = 2;
 
   /**
    * Helps set up intent to get picture
