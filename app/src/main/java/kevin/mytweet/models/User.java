@@ -27,4 +27,27 @@ public class User {
     this.email = email;
     this.password = password;
   }
+
+  /**
+   * Override equals method to compare by email
+   * @param o Object to compare
+   * @return Boolean of whether object is equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof User)) {
+      return false;
+    }
+    User user = (User) o;
+    return email.equals(user.email);
+  }
+
+  /**
+   * Override hashcode to hash of user email
+   * @return Hash code value
+   */
+  @Override
+  public int hashCode() {
+    return email.hashCode();
+  }
 }

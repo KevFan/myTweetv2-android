@@ -56,7 +56,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment
 
   /**
    * Listener for changes in the shared preferences values through keys
-   * Used to update user details through use of keys
+   * Used to update user preference for background update interval for updating tweets + following
+   * services
    *
    * @param sharedPreferences Shared preference object
    * @param key               Key to a shared preference field/value

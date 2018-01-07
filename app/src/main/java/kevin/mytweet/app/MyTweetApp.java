@@ -35,7 +35,6 @@ import static kevin.mytweet.helpers.SaveLoadHelper.saveToken;
 public class MyTweetApp extends Application implements Callback<Token> {
   public MyTweetService tweetService;
   public MyTweetServiceOpen tweetServiceOpen;
-  public boolean tweetServiceAvailable = false;
   public List<User> users = new ArrayList<>();
   public List<Follow> followers = new ArrayList<>();
   public List<Follow> followings = new ArrayList<>();
@@ -58,17 +57,21 @@ public class MyTweetApp extends Application implements Callback<Token> {
     super.onCreate();
     info("MyTweet App Started");
     app = this;
+    // Set google api client to use location services
     mGoogleApiClient = new GoogleApiClient.Builder(this)
         .addApi(LocationServices.API)
         .build();
     mGoogleApiClient.connect();
 
     tweetServiceOpen = RetrofitServiceFactory.createService(MyTweetServiceOpen.class);
+
+    // If no internet connectivity - load timeline, followers, followings from saved jsons
     if (!isOnline()) {
       timeLine = loadTimeLine(this);
       followers = loadFollowers(this);
       followings = loadFollowings(this);
     } else {
+      // Start broadcast for services to updating listings
       sendBroadcast(new Intent("kevin.mytweet.receivers.SEND_BROADCAST"));
     }
   }
@@ -80,26 +83,6 @@ public class MyTweetApp extends Application implements Callback<Token> {
    */
   public static MyTweetApp getApp() {
     return app;
-  }
-
-
-//
-//  /**
-//   * Sets shared preference values to current user
-//   */
-//  public void setPreferenceSettings() {
-//    info("MyTweetApp - setting shared preference to current user");
-//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//    SharedPreferences.Editor editor = prefs.edit();
-//    editor.putString("firstName", currentUser.firstName);
-//    editor.putString("lastName", currentUser.lastName);
-//    editor.putString("email", currentUser.email);
-//    editor.putString("password", currentUser.password);
-//    editor.apply();
-//  }
-
-  public void addTweet(Tweet tweet) {
-    timeLine.add(tweet);
   }
 
   /**
@@ -119,14 +102,11 @@ public class MyTweetApp extends Application implements Callback<Token> {
   }
 
   /**
-   * Delete tweet from the ArrayList of tweets
+   * Calls api to authenticate user based on email and password entered
    *
-   * @param tweet Tweet to remove
+   * @param email    email of user
+   * @param password password of user
    */
-  public void deleteTweet(Tweet tweet) {
-    timeLine.remove(tweet);
-  }
-
   public void validUser(String email, String password) {
     User user = new User("", "", email, password);
     info(user.email + " " + user.password);
@@ -134,6 +114,13 @@ public class MyTweetApp extends Application implements Callback<Token> {
     call.enqueue(this);
   }
 
+  /**
+   * On success response - save the token and create the jwt services using token result and
+   * set current user to response
+   *
+   * @param call     Token call
+   * @param response Token response
+   */
   @Override
   public void onResponse(Call<Token> call, Response<Token> response) {
     Token auth = response.body();
@@ -149,23 +136,35 @@ public class MyTweetApp extends Application implements Callback<Token> {
     }
   }
 
+  /**
+   * On failure of api call to authenticate user
+   *
+   * @param call Token call
+   * @param t    Error
+   */
   @Override
   public void onFailure(Call<Token> call, Throwable t) {
     toastMessage(this, "Unable to authenticate with Tweet Service");
     info("Failed to Authenticated!");
   }
 
-  // https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
-  // ICMP
+  /**
+   * Ping check for checking is user has internet connectivity or not
+   * https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
+   *
+   * @return Boolean of whether
+   */
   public boolean isOnline() {
     Runtime runtime = Runtime.getRuntime();
     try {
       Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-      int     exitValue = ipProcess.waitFor();
+      int exitValue = ipProcess.waitFor();
       return (exitValue == 0);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
-    catch (IOException e)          { e.printStackTrace(); }
-    catch (InterruptedException e) { e.printStackTrace(); }
 
     return false;
   }

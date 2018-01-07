@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
-
 import kevin.mytweet.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,7 +54,6 @@ public class UpdateAccountFragment extends Fragment implements Callback<User> {
     updateButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        toastMessage(getActivity(), "Update Button Pressed");
         Call<User> call = (Call<User>) app.tweetService.updateUser(app.currentUser._id,
             new User(firstName.getText().toString(), lastName.getText().toString()
                 , email.getText().toString(), password.getText().toString()));
@@ -79,6 +77,13 @@ public class UpdateAccountFragment extends Fragment implements Callback<User> {
     password.setText(user.password);
   }
 
+  /**
+   * An response of update user callback - update user details on navigation header and app current
+   * user
+   *
+   * @param call     User call
+   * @param response User response
+   */
   @Override
   public void onResponse(Call<User> call, Response<User> response) {
     app.currentUser = response.body();
@@ -89,6 +94,12 @@ public class UpdateAccountFragment extends Fragment implements Callback<User> {
     toastMessage(getActivity(), "Successfully Updated");
   }
 
+  /**
+   * On failure of update user call
+   *
+   * @param call User call
+   * @param t    Error
+   */
   @Override
   public void onFailure(Call<User> call, Throwable t) {
     toastMessage(getActivity(), "Failed to update");

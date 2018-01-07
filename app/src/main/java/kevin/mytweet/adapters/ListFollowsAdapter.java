@@ -5,41 +5,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.Switch;
-import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import kevin.mytweet.R;
-import kevin.mytweet.app.MyTweetApp;
-import kevin.mytweet.listeners.FollowUnfollowListener;
 import kevin.mytweet.models.Follow;
-import kevin.mytweet.models.Tweet;
-import kevin.mytweet.models.User;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.UserAdapterHelper.setDetails;
 
 /**
- * Custom adaptor for the timeline fragment to list tweets
+ * Custom adaptor for the follow fragment to list follow details
  */
 public class ListFollowsAdapter extends ArrayAdapter<Follow> {
   private Context context;
   public List<Follow> follows;
   private String followOrFollowing;
-  private MyTweetApp app = MyTweetApp.getApp();
 
   /**
-   * TimeLineAdapter constructor
+   * ListFollowAdaptor constructor
    *
    * @param context Context of where the adapter is constructed
    * @param follows ArrayList of users
@@ -52,7 +35,8 @@ public class ListFollowsAdapter extends ArrayAdapter<Follow> {
   }
 
   /**
-   * Call list_item_tweet for each tweet in ArrayList to display tweet data at specific position
+   * Call list_item_user for each follow in ArrayList to display user data at specific position
+   * depending on whether to list follower or following details
    *
    * @param position    position of tweet item
    * @param convertView View to reuse
@@ -68,7 +52,7 @@ public class ListFollowsAdapter extends ArrayAdapter<Follow> {
 
     Follow follow = follows.get(position);
 
-    // Set details based of whether list is a follower or following list
+    // Calls helper method to set user details based of whether list is a follower or following list
     if (followOrFollowing.equals("follower")) {
       setDetails(context, convertView, follow.follower);
     } else {
@@ -78,6 +62,11 @@ public class ListFollowsAdapter extends ArrayAdapter<Follow> {
     return convertView;
   }
 
+  /**
+   * Return the size of the follow list
+   *
+   * @return Size of the follow list
+   */
   @Override
   public int getCount() {
     return follows.size();
