@@ -151,8 +151,10 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
     @Override
     public void onResponse(Call<List<User>> call, Response<List<User>> response) {
       users = response.body();
-      if (mSwipeRefreshLayout != null)
+      users.remove(app.currentUser);
+      if (mSwipeRefreshLayout != null) {
         mSwipeRefreshLayout.setRefreshing(false);
+      }
       adapter = new ListUserAdapter(getActivity(), users);
       filter = new UserFilter(users, adapter);
       listView.setAdapter(adapter);
