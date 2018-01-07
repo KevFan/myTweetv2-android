@@ -24,7 +24,8 @@ The Android application aims to provide complete intregation with the web applic
 The web server application github can be found at: https://github.com/KevFan/myTweet2-ent-web
 with deployed server application at: http://34.242.209.100/
 
-A client single page application for the web server can also be found at github: https://github.com/KevFan/mytweet2-aurelia-client-ts
+A client single page application for the web server can also be found at github: https://github.com/KevFan/mytweet2-aurelia-client-ts 
+with the deployed application at http://kevfans3.s3-website-eu-west-1.amazonaws.com/#/
 
 ## Persistance Approach
 Persistance achieved in the android application is largely achieved by saving the data to the web application mongo database if connected online. The user would then pull the latest data from the server. 
@@ -42,15 +43,14 @@ The UX adopts an approach to use mainly the navigation drawer for navigation and
 
 The DX approach adopted aims to provide as few code duplications as possible. Fragments were used where possible to allow the fragments be reused where possible. The code itself is all commented for documentation and seperated into appropriate packages. 
 
-## List of Software + Technologies Used
-* [Android Studio](https://developer.android.com/studio/index.html) - IDE
-* [Gson](https://github.com/google/gson) - Persistence by Object to Json serialisation
+## Building Instructions
+If building your own apk of the application, API keys are not provided so you should generate and provide you own google-services.json into the `app` directory for use of google services, and also put in your Google Maps API key into your manfiest file of the application or as a string resource. If these are not provided, the google maps functionality would not work as intended.
 
 ## Authors:
 Kevin Fan ([KevFan](https://github.com/KevFan)) - 20077688
 
 ## Version/Date:
-6th January 2018
+7th January 2018
 
 [nav]: ./readme_resources/navdrawer.jpg
 [timeline]: ./readme_resources/timeline.jpg
