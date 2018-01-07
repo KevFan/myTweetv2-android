@@ -15,10 +15,18 @@ import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.User;
 
 /**
+ * User adapter helper class - used to contain common code that is used in the follow adapter and user
+ * adapter
  * Created by kevin on 29/12/2017.
  */
 
 public class UserAdapterHelper {
+  /**
+   * Set the details of the list user row view with the user details passed in
+   * @param context Context
+   * @param convertView Row view from adapter
+   * @param user User to set view with
+   */
   public static void setDetails(Context context, View convertView, User user) {
     TextView userName = (TextView) convertView.findViewById(R.id.list_user_UserName);
     ImageView userImage = (ImageView) convertView.findViewById(R.id.list_user_userImage);
@@ -37,6 +45,7 @@ public class UserAdapterHelper {
         break;
       }
     }
+    // Set listener for switch
     followSwitch.setOnCheckedChangeListener(new FollowUnfollowListener(user));
     // TODO: Causes the switch to stay invisible for filter results ending in same position :/
 //    if (user._id.equals(MyTweetApp.getApp().currentUser._id)) {

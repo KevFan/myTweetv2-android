@@ -37,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
     if (item.getItemId() == android.R.id.home) {
       navigateUp(this);
       return true;
-    } else{
+    } else {
       return super.onOptionsItemSelected(item);
     }
   }

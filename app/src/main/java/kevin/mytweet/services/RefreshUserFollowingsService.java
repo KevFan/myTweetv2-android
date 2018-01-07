@@ -15,15 +15,26 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
-
+/**
+ * Service to refresh user following list in app
+ */
 public class RefreshUserFollowingsService extends IntentService {
   MyTweetApp app;
 
+  /**
+   * Constructor for RefreshUserFollowingsService
+   */
   public RefreshUserFollowingsService() {
     super("RefreshUserFollowingsService");
     app = MyTweetApp.getApp();
   }
 
+  /**
+   * On intent - make the call to get the list of user followings and update the user following list
+   * in app with response and send broadcast of update
+   *
+   * @param intent Intent to refresh user following list
+   */
   @Override
   protected void onHandleIntent(Intent intent) {
     Intent localIntent = new Intent(FollowFragment.BROADCAST_ACTION);
@@ -38,6 +49,9 @@ public class RefreshUserFollowingsService extends IntentService {
     }
   }
 
+  /**
+   * On destroy of service
+   */
   @Override
   public void onDestroy() {
     super.onDestroy();

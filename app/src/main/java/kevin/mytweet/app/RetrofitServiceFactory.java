@@ -7,15 +7,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Retrofit.Builder;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
+ * Retrofit Service Factory to built services based on whether service requires JWT headers or not
  * Created by kevin on 24/12/2017.
  */
 
 public class RetrofitServiceFactory {
-  public static final String API_BASE_URL = "http://192.168.0.8:4000";
+//  public static final String API_BASE_URL = "http://192.168.0.8:4000";
+  public static final String API_BASE_URL = "http://34.242.209.100";
 
   private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 

@@ -1,9 +1,7 @@
 package kevin.mytweet.app;
 
 import java.util.List;
-import java.util.stream.Stream;
 
-import kevin.mytweet.models.Coords;
 import kevin.mytweet.models.Follow;
 import kevin.mytweet.models.Marker;
 import kevin.mytweet.models.Tweet;
@@ -21,6 +19,7 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 /**
+ * MyTweetService Api call to routes that require JWT
  * Created by kevin on 24/11/2017.
  */
 

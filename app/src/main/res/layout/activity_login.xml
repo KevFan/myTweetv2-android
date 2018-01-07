@@ -36,7 +36,7 @@
             android:drawableStart="@drawable/ic_email_black_24dp"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:text="homer@simpson.com"/>
+            />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -59,7 +59,7 @@
             android:drawableStart="@drawable/ic_lock_black_24dp"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:text="secret"/>
+            />
     </android.support.design.widget.TextInputLayout>
 
     <Button

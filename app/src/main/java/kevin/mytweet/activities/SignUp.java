@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import kevin.mytweet.R;
 import kevin.mytweet.app.MyTweetApp;
@@ -16,7 +15,8 @@ import retrofit2.Response;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 import static kevin.mytweet.helpers.MessageHelpers.toastMessage;
-import static kevin.mytweet.helpers.ValidatorHelpers.*;
+import static kevin.mytweet.helpers.ValidatorHelpers.isEmailUsed;
+import static kevin.mytweet.helpers.ValidatorHelpers.isValidEmail;
 
 /**
  * Sign up Activity to register a new user
@@ -32,6 +32,7 @@ public class SignUp extends BaseActivity implements Callback<User> {
 
   /**
    * Called when activity is first created
+   *
    * @param savedInstanceState Bundle with saved data if any
    */
   @Override
@@ -49,22 +50,31 @@ public class SignUp extends BaseActivity implements Callback<User> {
     signup.setOnClickListener(signupListener);
   }
 
+  /**
+   * Success response of user creation - validates user to start home activity
+   *
+   * @param call     User call
+   * @param response Response with new user
+   */
   @Override
-  public void onResponse(Call<User> call, Response<User> response)
-  {
+  public void onResponse(Call<User> call, Response<User> response) {
     app.users.add(response.body());
     app.currentUser = response.body();
     toastMessage(this, "Successfully Registered");
-//    startActivity(new Intent(this, HomeActivity.class));
     app.validUser(email.getText().toString(), password.getText().toString());
   }
 
+  /**
+   * On call failure
+   *
+   * @param call User call
+   * @param t    Error
+   */
   @Override
-  public void onFailure(Call<User> call, Throwable t)
-  {
-    app.tweetServiceAvailable = false;
+  public void onFailure(Call<User> call, Throwable t) {
     toastMessage(this, "MyTweet Service Unavailable. Try again later");
-    startActivity (new Intent(this, Welcome.class));
+    info("Welcome Activty:" + t.toString());
+    startActivity(new Intent(this, Welcome.class));
   }
 
   /**
@@ -87,7 +97,7 @@ public class SignUp extends BaseActivity implements Callback<User> {
       } else if (isEmailUsed(emailString)) {
         toastMessage(view.getContext(), "Email already used by another user");
       } else {
-//        app.newUser(new User(firstNameString, lastNameString, emailString, passwordString));
+        // Make call by by retrofit to create new user
         Call<User> call = (Call<User>) app.tweetServiceOpen.createUser
             (new User(firstNameString, lastNameString, emailString, passwordString));
         call.enqueue(SignUp.this);

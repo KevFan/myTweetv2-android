@@ -2,6 +2,7 @@ package kevin.mytweet.activities;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -10,8 +11,6 @@ import kevin.mytweet.adapters.DetailTweetPagerAdapter;
 import kevin.mytweet.app.MyTweetApp;
 import kevin.mytweet.fragments.tweet.DetailTweetFragment;
 import kevin.mytweet.models.Tweet;
-
-import android.view.MenuItem;
 
 import static kevin.mytweet.helpers.MessageHelpers.info;
 
@@ -69,7 +68,7 @@ public class DetailTweetPagerActivity extends BaseActivity {
     if (item.getItemId() == android.R.id.home) {
       this.finish();
       return true;
-    } else{
+    } else {
       return super.onOptionsItemSelected(item);
     }
   }
