@@ -1,5 +1,5 @@
 # MyTweet 2 Android
-![Welcome Activity][welcome] ![TimeLine Activity][timeline] ![Welcome Activity][addtweet]
+![Nav Drawer][nav] ![TimeLine][timeline] ![Maps][map]
 
 MyTweet 2 android is a continutation of the first Android assignment which provides addtional functionality and communicates with a web application equivalent.
 
@@ -21,9 +21,10 @@ MyTweet 2 android is a continutation of the first Android assignment which provi
 ## Web App Integration
 The Android application aims to provide complete intregation with the web application equivalent. All actions completed by the user is also reflected on the web application. This is achieved by having the android communicate with the API of the web server application. 
 
-The web server application github can be found here <enter link>, with deployed server application at: <enter link>
+The web server application github can be found at: https://github.com/KevFan/myTweet2-ent-web
+with deployed server application at: <enter link>
 
-A client single page application for the web server can also be found at github: <enter link>
+A client single page application for the web server can also be found at github: https://github.com/KevFan/mytweet2-aurelia-client-ts
 
 ## Persistance Approach
 Persistance achieved in the android application is largely achieved by saving the data to the web application mongo database if connected online. The user would then pull the latest data from the server. 
@@ -35,7 +36,6 @@ A git branching model was used in this project. The project would contain two ma
 
 The github for the project can be found at the following link: 
 https://github.com/KevFan/myTweetv2-android
-
 
 ### UX/DX
 The UX adopts an approach to use mainly the navigation drawer for navigation and available user actions. A profile fragment with a pager view is provided for listing of the user tweets, followers and followings, which also provide a profile activty for viewing of other user profiles. The UX aims to provide a common color scheme throughout the application and provide user interactions that are int
@@ -53,6 +53,6 @@ Kevin Fan ([KevFan](https://github.com/KevFan)) - 20077688
 ## Version/Date:
 6th January 2018
 
-[welcome]: ./readme_resources/welcome.jpg
+[nav]: ./readme_resources/navdrawer.jpg
 [timeline]: ./readme_resources/timeline.jpg
-[addtweet]: ./readme_resources/addtweet.jpg
+[map]: ./readme_resources/maps.jpg
